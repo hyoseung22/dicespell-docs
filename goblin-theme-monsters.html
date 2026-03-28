@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DiceSpell - 고블린 테마 몬스터 상세 명세서</title>
+  <style>
+    :root {
+      --bg: #120d09;
+      --panel: #21170f;
+      --panel-alt: #2b1f15;
+      --line: rgba(212, 168, 84, 0.24);
+      --text: #f0e4cb;
+      --muted: #bda98b;
+      --gold: #d4a854;
+      --green: #9bc57a;
+      --blue: #8ed3ff;
+      --yellow: #f6d667;
+      --earth: #93c56d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(212, 168, 84, 0.14), transparent 32%),
+        linear-gradient(180deg, #120d09 0%, #0e0906 100%);
+      color: var(--text);
+      font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    }
+    main {
+      width: min(1240px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 44px 0 72px;
+    }
+    h1, h2, h3, h4, p { margin-top: 0; }
+    h1 { font-size: clamp(34px, 5vw, 54px); line-height: 1.02; margin-bottom: 10px; }
+    h2 { margin: 34px 0 14px; font-size: 28px; }
+    h3 { margin: 26px 0 12px; font-size: 20px; }
+    p, li { line-height: 1.7; color: var(--muted); }
+    .hero,
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(33, 23, 15, 0.96), rgba(18, 13, 9, 0.98));
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+    }
+    .hero { padding: 28px; }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--gold);
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .grid-3,
+    .grid-2 {
+      display: grid;
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { padding: 22px; }
+    .stat strong { display: block; margin-top: 8px; color: var(--text); font-size: 21px; }
+    .note {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(212, 168, 84, 0.18);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--muted);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      color: var(--gold);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    tr:last-child td { border-bottom: none; }
+    code {
+      padding: 0 5px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      font-family: "SFMono-Regular", "Menlo", monospace;
+      font-size: 0.92em;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font-size: 12px;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+    .tag.none { color: #d5c8a4; }
+    .tag.ice { color: var(--blue); }
+    .tag.electric { color: var(--yellow); }
+    .tag.ground { color: var(--earth); }
+    .small { font-size: 13px; color: var(--muted); }
+    .summary-list { margin: 0; padding-left: 18px; }
+    .footer {
+      margin-top: 26px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    @media (max-width: 980px) {
+      .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      table { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">Goblin Theme Spec</p>
+      <h1>고블린 테마 몬스터 상세 명세서</h1>
+      <p>
+        현재 빌드 기준으로 고블린 테마 몬스터의 데이터 테이블 수치와 실제 전투 엔진에서 연결되는 행동 스킬을 정리한 문서다.
+        이 문서는 <code>data.js</code>의 몬스터 템플릿과 <code>game-engine.js</code>의 intent 처리 로직을 함께 읽은 결과를 하나의 기획/운영 문서로 묶는다.
+      </p>
+      <div class="meta">
+        <span class="pill">최종 갱신: 2026-03-17 01:01</span>
+        <span class="pill">대상 테마: goblin</span>
+        <span class="pill">정상 몬스터 4종 + 보스 1종 + 최종보스 1종</span>
+        <span class="pill">현재 빌드 기준</span>
+      </div>
+      <div class="note">
+        중요: 현재 빌드는 고블린 몬스터용 별도 스킬 데이터 테이블을 따로 두지 않는다.
+        실제 연결 스킬은 <code>intents[]</code>, <code>element</code>, 그리고 선택적으로 붙는 특수 필드가 합쳐져 결정된다.
+        즉 이 문서의 `연결 스킬`은 개별 스킬 asset이 아니라 `행동 intent + 상태 부여 + 공통 처리 로직` 해석값이다.
+      </div>
+    </section>
+
+    <section class="grid-3">
+      <article class="card stat">
+        고블린 테마 정체성
+        <strong>템포 압박 + 붕괴 압박 + 자기 강화</strong>
+        <p class="small">슬라임보다 공격적이고, 리치보다 직선적이다. 방어/붕괴/격노를 섞어 플레이어에게 빠른 정리 압박을 건다.</p>
+      </article>
+      <article class="card stat">
+        속성 분포
+        <strong>무속성 / 냉기 / 전격 / 대지</strong>
+        <p class="small">고블린 대장은 대지 쇄약, 보물 고블린 왕은 전격 감전으로 후반 피해 증폭을 건다.</p>
+      </article>
+      <article class="card stat">
+        역할 커버리지
+        <strong>전열 / 방벽 / 돌격 / 보스</strong>
+        <p class="small">일반전에서는 전열과 돌격이, 변주 역할은 냉기 방벽과 전격 돌격이 맡는다.</p>
+      </article>
+    </section>
+
+    <h2>1. 공통 해석 규칙</h2>
+    <div class="grid-2">
+      <article class="card">
+        <h3>1.1 스폰 시 수치 계산식</h3>
+        <table>
+          <tr><th>항목</th><th>현재 규칙</th></tr>
+          <tr><td>Normal HP</td><td><code>baseHp + floor((page - 1) / 2) * hpGrowth + grimoire.addMonsterHp</code>에 페이지 구간 HP multiplier와 overrun multiplier를 곱한다.</td></tr>
+          <tr><td>Boss HP</td><td><code>baseHp + max(2, floor(page * 0.55)) * hpGrowth + grimoire.addMonsterHp</code> 이후 boss multiplier 적용.</td></tr>
+          <tr><td>Final Boss HP</td><td><code>baseHp + max(4, floor(page * 0.65)) * hpGrowth + grimoire.addMonsterHp</code> 이후 final-boss multiplier 적용.</td></tr>
+          <tr><td>Normal ATK</td><td><code>baseAttack + floor((page - 1) / 3) * attackGrowth + grimoire.addMonsterAttack</code>에 구간 multiplier와 overrun multiplier를 곱한다.</td></tr>
+          <tr><td>Boss / Final ATK</td><td><code>baseAttack + floor(page / 2) * attackGrowth + grimoire.addMonsterAttack</code>에 role multiplier와 overrun multiplier를 곱한다.</td></tr>
+          <tr><td>실전 공격력</td><td>행동 시점의 실제 피해는 <code>effectiveMonsterAttack</code>을 사용한다. 여기엔 <code>rage</code>(+2/stack), monster <code>chill</code>(-2/stack), 일부 특수 패시브 보정이 추가된다.</td></tr>
+        </table>
+      </article>
+      <article class="card">
+        <h3>1.2 intent 기반 행동 스킬</h3>
+        <table>
+          <tr><th>intent</th><th>표시 라벨</th><th>실제 효과</th></tr>
+          <tr><td><code>attack</code></td><td>공격 N</td><td>플레이어에게 <code>effectiveMonsterAttack</code>만큼 피해. 몬스터 속성이 있으면 원소 상태도 같이 부여.</td></tr>
+          <tr><td><code>defend</code> / <code>guard</code></td><td>방어</td><td>자신에게 Shield +6.</td></tr>
+          <tr><td><code>collapse</code></td><td>붕괴 +7</td><td>플레이어 붕괴 게이지 +7.</td></tr>
+          <tr><td><code>heal</code></td><td>재생</td><td>자신의 HP +16. 현재 HP가 35% 이하이고 heal intent가 있으면 우선 선택된다.</td></tr>
+          <tr><td><code>buff</code></td><td>격노</td><td><code>rage 1 / 3턴</code> 부여. 실질 공격력 +2.</td></tr>
+          <tr><td><code>burn</code></td><td>공격 N+2 + 화상</td><td>공격력 +2 버전의 속성 공격. 현재 고블린 테마는 이 intent를 사용하지 않는다.</td></tr>
+        </table>
+      </article>
+    </div>
+
+    <div class="grid-2">
+      <article class="card">
+        <h3>1.3 속성 연동 상태 이상</h3>
+        <table>
+          <tr><th>속성</th><th>플레이어 피격 시 부여</th><th>효과 요약</th></tr>
+          <tr><td>무속성</td><td>없음</td><td>추가 상태 없음.</td></tr>
+          <tr><td>냉기</td><td><code>chill 1 / 2턴</code></td><td>플레이어 기준 리롤 -1.</td></tr>
+          <tr><td>전격</td><td><code>shock 1 / 2턴</code></td><td>받는 피해 +20%.</td></tr>
+          <tr><td>대지</td><td><code>fracture 1 / 2턴</code></td><td>받는 피해 +10%, 턴 시작 Shield -2.</td></tr>
+        </table>
+      </article>
+      <article class="card">
+        <h3>1.4 문서 해석 주의</h3>
+        <ul class="summary-list">
+          <li>아래 표의 HP/ATK는 모두 템플릿의 <strong>기본값</strong>이다.</li>
+          <li>실전 스폰 수치는 페이지, grimoire 보정, overrun 난이도에 따라 달라진다.</li>
+          <li>고블린 테마는 별도 패시브 필드가 붙은 일반 몬스터가 아직 없다. 현재 연결 스킬은 전부 공통 intent 시스템 안에서 해석된다.</li>
+          <li>보물 고블린 왕만 <code>heal</code> intent를 가져, 저체력 구간에서 행동 패턴이 바뀐다.</li>
+        </ul>
+      </article>
+    </div>
+
+    <h2>2. 고블린 테마 몬스터 데이터 테이블</h2>
+    <article class="card">
+      <table>
+        <tr>
+          <th>몬스터</th>
+          <th>코드</th>
+          <th>구분</th>
+          <th>역할</th>
+          <th>속성</th>
+          <th>Base HP</th>
+          <th>HP 성장</th>
+          <th>Base ATK</th>
+          <th>ATK 성장</th>
+          <th>Gold</th>
+          <th>처치 시 붕괴 감소</th>
+          <th>intent 배열</th>
+        </tr>
+        <tr>
+          <td>고블린 스카웃</td>
+          <td><code>410003</code></td>
+          <td>Normal</td>
+          <td>돌격</td>
+          <td><span class="tag none">무속성</span></td>
+          <td>22</td>
+          <td>+5</td>
+          <td>5</td>
+          <td>+1</td>
+          <td>8</td>
+          <td>2</td>
+          <td><code>["attack","defend"]</code></td>
+        </tr>
+        <tr>
+          <td>노말 고블린</td>
+          <td><code>410004</code></td>
+          <td>Normal</td>
+          <td>전열</td>
+          <td><span class="tag none">무속성</span></td>
+          <td>26</td>
+          <td>+6</td>
+          <td>6</td>
+          <td>+2</td>
+          <td>10</td>
+          <td>3</td>
+          <td><code>["attack","defend"]</code></td>
+        </tr>
+        <tr>
+          <td>얼음 고블린</td>
+          <td><code>410005</code></td>
+          <td>Normal</td>
+          <td>방벽</td>
+          <td><span class="tag ice">냉기</span></td>
+          <td>28</td>
+          <td>+6</td>
+          <td>7</td>
+          <td>+2</td>
+          <td>10</td>
+          <td>3</td>
+          <td><code>["attack","guard","collapse"]</code></td>
+        </tr>
+        <tr>
+          <td>전격 고블린</td>
+          <td><code>410007</code></td>
+          <td>Normal</td>
+          <td>돌격</td>
+          <td><span class="tag electric">전격</span></td>
+          <td>24</td>
+          <td>+5</td>
+          <td>8</td>
+          <td>+2</td>
+          <td>11</td>
+          <td>3</td>
+          <td><code>["attack","collapse"]</code></td>
+        </tr>
+        <tr>
+          <td><strong>고블린 대장</strong></td>
+          <td><code>410020</code></td>
+          <td>Boss</td>
+          <td>보스</td>
+          <td><span class="tag ground">대지</span></td>
+          <td>250</td>
+          <td>+22</td>
+          <td>14</td>
+          <td>+3</td>
+          <td>65</td>
+          <td>8</td>
+          <td><code>["attack","buff","collapse"]</code></td>
+        </tr>
+        <tr>
+          <td><strong>보물 고블린 왕</strong></td>
+          <td><code>410030</code></td>
+          <td>Final Boss</td>
+          <td>최종보스</td>
+          <td><span class="tag electric">전격</span></td>
+          <td>320</td>
+          <td>+24</td>
+          <td>16</td>
+          <td>+4</td>
+          <td>100</td>
+          <td>12</td>
+          <td><code>["attack","buff","collapse","heal"]</code></td>
+        </tr>
+      </table>
+    </article>
+
+    <h2>3. 몬스터별 연결 스킬 해석</h2>
+    <div class="grid-2">
+      <article class="card">
+        <h3>고블린 스카웃 <code>410003</code></h3>
+        <p><span class="tag none">무속성</span><span class="tag">돌격</span></p>
+        <table>
+          <tr><th>연결 스킬</th><th>실제 효과</th></tr>
+          <tr><td>기본 공격</td><td>무속성 공격. 추가 상태 이상 없음.</td></tr>
+          <tr><td>방어 태세</td><td>Shield +6.</td></tr>
+        </table>
+        <p class="small">의도 가중치가 1:1이라 공격과 방어를 반반 섞는 초반 돌격형 기본 유닛이다.</p>
+      </article>
+      <article class="card">
+        <h3>노말 고블린 <code>410004</code></h3>
+        <p><span class="tag none">무속성</span><span class="tag">전열</span></p>
+        <table>
+          <tr><th>연결 스킬</th><th>실제 효과</th></tr>
+          <tr><td>기본 공격</td><td>무속성 공격. 추가 상태 이상 없음.</td></tr>
+          <tr><td>방어 태세</td><td>Shield +6.</td></tr>
+        </table>
+        <p class="small">스카웃보다 HP와 공격 성장치가 높아 전열 유지력이 더 좋다. 고블린 테마의 표준 기준점 역할을 한다.</p>
+      </article>
+      <article class="card">
+        <h3>얼음 고블린 <code>410005</code></h3>
+        <p><span class="tag ice">냉기</span><span class="tag">방벽</span></p>
+        <table>
+          <tr><th>연결 스킬</th><th>실제 효과</th></tr>
+          <tr><td>냉기 공격</td><td>공격 후 <code>chill 1 / 2턴</code> 부여. 플레이어 리롤 -1.</td></tr>
+          <tr><td>방어 태세</td><td>Shield +6.</td></tr>
+          <tr><td>붕괴 유도</td><td>플레이어 붕괴 게이지 +7.</td></tr>
+        </table>
+        <p class="small">리롤 압박과 방어/붕괴를 함께 가져, 고블린 테마 안에서 가장 `시간을 끄는` 변주 몬스터다.</p>
+      </article>
+      <article class="card">
+        <h3>전격 고블린 <code>410007</code></h3>
+        <p><span class="tag electric">전격</span><span class="tag">돌격</span></p>
+        <table>
+          <tr><th>연결 스킬</th><th>실제 효과</th></tr>
+          <tr><td>전격 공격</td><td>공격 후 <code>shock 1 / 2턴</code> 부여. 플레이어 받는 피해 +20%.</td></tr>
+          <tr><td>붕괴 유도</td><td>플레이어 붕괴 게이지 +7.</td></tr>
+        </table>
+        <p class="small">방어 대신 감전과 붕괴를 고른 순수 압박형 고블린이다. 뒤에 다른 고블린이 있으면 누적 피해 기대값을 빠르게 올린다.</p>
+      </article>
+      <article class="card">
+        <h3>고블린 대장 <code>410020</code></h3>
+        <p><span class="tag ground">대지</span><span class="tag">보스</span></p>
+        <table>
+          <tr><th>연결 스킬</th><th>실제 효과</th></tr>
+          <tr><td>대지 공격</td><td>공격 후 <code>fracture 1 / 2턴</code> 부여. 받는 피해 +10%, 턴 시작 Shield -2.</td></tr>
+          <tr><td>격노</td><td><code>rage 1 / 3턴</code>. 실질 공격력 +2.</td></tr>
+          <tr><td>붕괴 유도</td><td>플레이어 붕괴 게이지 +7.</td></tr>
+        </table>
+        <p class="small">쇄약으로 피해 증폭을 건 뒤 격노와 붕괴로 압박을 누적하는 보스다. 고블린 테마가 단순 다수전이 아니라 `중간 보스형 압박`도 가진다는 증거다.</p>
+      </article>
+      <article class="card">
+        <h3>보물 고블린 왕 <code>410030</code></h3>
+        <p><span class="tag electric">전격</span><span class="tag">최종보스</span></p>
+        <table>
+          <tr><th>연결 스킬</th><th>실제 효과</th></tr>
+          <tr><td>전격 공격</td><td>공격 후 <code>shock 1 / 2턴</code> 부여. 플레이어 받는 피해 +20%.</td></tr>
+          <tr><td>격노</td><td><code>rage 1 / 3턴</code>. 실질 공격력 +2.</td></tr>
+          <tr><td>붕괴 유도</td><td>플레이어 붕괴 게이지 +7.</td></tr>
+          <tr><td>재생</td><td>HP +16. HP가 35% 이하일 때는 heal intent를 우선 선택한다.</td></tr>
+        </table>
+        <p class="small">감전으로 피해 증폭을 깔고, 격노로 킬 턴을 압박하며, 저체력 구간에는 재생으로 전투를 끈다. 현재 고블린 최종보스는 `누적 압박 + 막판 연장전`의 성격이 강하다.</p>
+      </article>
+    </div>
+
+    <h2>4. 기획 해석 메모</h2>
+    <div class="grid-2">
+      <article class="card">
+        <h3>현재 고블린 테마가 잘하는 것</h3>
+        <ul class="summary-list">
+          <li>무속성 기본형, 냉기 방벽형, 전격 돌격형으로 normal 변주 폭이 적절하다.</li>
+          <li>보스는 대지 쇄약, 최종보스는 전격 감전으로 속성 압박 축이 분명하다.</li>
+          <li><code>defend/guard</code>, <code>collapse</code>, <code>buff</code>가 섞이면서 `빨리 끝내야 하는 적`의 인상을 잘 만든다.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>현재 비어 있는 부분</h3>
+        <ul class="summary-list">
+          <li>리치 테마처럼 개별 패시브 필드가 붙은 고블린 일반 몬스터가 아직 없다.</li>
+          <li>고블린 테마만의 고유 행위, 예를 들면 약탈, 골드 변환, 추가 소환, 보상 간섭은 몬스터 쪽에 아직 직접 붙어 있지 않다.</li>
+          <li>즉 현재 고블린 몬스터 디자인은 `행동 템포`는 선명하지만 `경제/약탈 판타지`는 책과 유물 쪽에 더 많이 실려 있다.</li>
+        </ul>
+      </article>
+    </div>
+
+    <p class="footer">
+      데이터 출처: <code>dice-spell-standalone/src/data.js</code> 의 <code>MONSTER_LIBRARY.goblin</code>,
+      <code>dice-spell-standalone/src/game-engine.js</code> 의 <code>determineIntent</code>, <code>monsterAct</code>,
+      <code>ELEMENT_STATUS_MAP</code>, <code>STATUS_DEFS</code>, <code>createMonster</code>.
+    </p>
+  </main>
+</body>
+</html>

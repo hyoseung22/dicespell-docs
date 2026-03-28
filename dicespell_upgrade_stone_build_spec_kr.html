@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DiceSpell Standalone - 강화석 동작 상세 기획서</title>
+<style>
+  :root {
+    --bg: #120d09;
+    --bg-deep: #0d0906;
+    --panel: rgba(35, 26, 18, 0.96);
+    --panel-alt: rgba(48, 35, 22, 0.98);
+    --panel-soft: rgba(30, 22, 15, 0.85);
+    --line: rgba(212, 168, 84, 0.22);
+    --line-strong: rgba(212, 168, 84, 0.44);
+    --text: #efe1c5;
+    --muted: #b8a585;
+    --gold: #d4a854;
+    --gold-dim: #a87a2e;
+    --green: #88c36c;
+    --blue: #78acd8;
+    --purple: #b78ee6;
+    --danger: #de8d7a;
+    --shadow: 0 28px 80px rgba(0, 0, 0, 0.36);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    background:
+      radial-gradient(circle at top, rgba(212, 168, 84, 0.12), transparent 28%),
+      radial-gradient(circle at 85% 10%, rgba(120, 172, 216, 0.10), transparent 24%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+  }
+
+  a { color: inherit; }
+
+  .shell {
+    width: min(1320px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 28px 0 80px;
+  }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line-strong);
+    border-radius: 30px;
+    background: linear-gradient(135deg, rgba(52, 38, 23, 0.98), rgba(18, 14, 10, 0.98));
+    box-shadow: var(--shadow);
+    padding: 34px 34px 28px;
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    right: -80px;
+    bottom: -90px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(183, 142, 230, 0.18), transparent 72%);
+    pointer-events: none;
+  }
+
+  .eyebrow {
+    margin: 0 0 10px;
+    color: var(--gold);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(42px, 7vw, 68px);
+    line-height: 0.94;
+    letter-spacing: -0.04em;
+  }
+
+  .lead {
+    width: min(860px, 100%);
+    margin: 18px 0 0;
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.8;
+  }
+
+  .meta,
+  .quick-nav,
+  .stat-grid,
+  .two-grid,
+  .three-grid,
+  .flow,
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .meta { margin-top: 22px; }
+  .quick-nav { margin-top: 26px; }
+
+  .pill,
+  .nav-pill,
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+  }
+
+  .nav-pill {
+    color: var(--text);
+    border-color: rgba(212, 168, 84, 0.24);
+    background: rgba(212, 168, 84, 0.08);
+  }
+
+  .chip-gold { color: var(--gold); border-color: rgba(212, 168, 84, 0.28); }
+  .chip-green { color: var(--green); border-color: rgba(136, 195, 108, 0.28); }
+  .chip-blue { color: var(--blue); border-color: rgba(120, 172, 216, 0.28); }
+  .chip-purple { color: var(--purple); border-color: rgba(183, 142, 230, 0.28); }
+  .chip-danger { color: var(--danger); border-color: rgba(222, 141, 122, 0.28); }
+
+  .section-shell {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: 290px minmax(0, 1fr);
+    gap: 22px;
+    align-items: start;
+  }
+
+  .toc,
+  .section-card,
+  .stat-card,
+  .callout,
+  .summary-card {
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-soft) 100%);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
+  }
+
+  .toc {
+    position: sticky;
+    top: 20px;
+    padding: 22px;
+  }
+
+  .toc h2 {
+    margin: 0 0 16px;
+    font-size: 18px;
+  }
+
+  .toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .toc li + li { margin-top: 8px; }
+
+  .toc a {
+    display: block;
+    border-radius: 12px;
+    padding: 10px 12px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: all .18s ease;
+  }
+
+  .toc a:hover {
+    color: var(--gold);
+    background: rgba(212, 168, 84, 0.08);
+  }
+
+  .content {
+    min-width: 0;
+  }
+
+  .stat-grid {
+    margin-top: 24px;
+  }
+
+  .stat-card {
+    flex: 1 1 220px;
+    padding: 20px 22px;
+  }
+
+  .stat-card span {
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .stat-card strong {
+    display: block;
+    margin-top: 10px;
+    color: var(--gold);
+    font-size: 26px;
+    line-height: 1.08;
+  }
+
+  .stat-card p {
+    margin: 10px 0 0;
+    color: var(--muted);
+    line-height: 1.7;
+    font-size: 14px;
+  }
+
+  .section-card {
+    margin-top: 22px;
+    padding: 26px 28px;
+  }
+
+  .section-card h2 {
+    margin: 0 0 12px;
+    font-size: 30px;
+    line-height: 1.06;
+  }
+
+  .section-card h3 {
+    margin: 22px 0 10px;
+    color: var(--gold);
+    font-size: 18px;
+  }
+
+  .section-card p,
+  .section-card li {
+    color: var(--muted);
+    line-height: 1.82;
+  }
+
+  .section-card ul {
+    margin: 12px 0 0;
+    padding-left: 18px;
+  }
+
+  .section-card code {
+    padding: 1px 6px;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text);
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 12px;
+  }
+
+  .two-grid {
+    margin-top: 18px;
+  }
+
+  .two-grid > *,
+  .three-grid > * {
+    flex: 1 1 280px;
+  }
+
+  .summary-card {
+    padding: 18px 20px;
+  }
+
+  .summary-card h4 {
+    margin: 0 0 10px;
+    color: var(--text);
+    font-size: 16px;
+  }
+
+  .summary-card p {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .callout {
+    margin-top: 18px;
+    padding: 18px 20px;
+    border-left: 4px solid var(--gold);
+  }
+
+  .callout strong {
+    color: var(--gold);
+  }
+
+  table {
+    width: 100%;
+    margin: 16px 0;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  th {
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    background: rgba(212, 168, 84, 0.10);
+    color: var(--gold);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  td {
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--muted);
+  }
+
+  tr:nth-child(even) td {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .formula {
+    margin: 14px 0;
+    padding: 16px 18px;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    background: rgba(16, 12, 9, 0.82);
+    color: var(--gold);
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.75;
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
+
+  .flow {
+    margin-top: 16px;
+    align-items: center;
+  }
+
+  .flow-step {
+    display: inline-flex;
+    align-items: center;
+    min-height: 42px;
+    padding: 0 14px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .flow-arrow {
+    color: var(--gold);
+    font-size: 18px;
+  }
+
+  .source-list a {
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(212, 168, 84, 0.35);
+  }
+
+  .source-list a:hover {
+    color: var(--gold);
+  }
+
+  .footer {
+    margin-top: 24px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  @media (max-width: 1060px) {
+    .section-shell {
+      grid-template-columns: 1fr;
+    }
+
+    .toc {
+      position: static;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .shell {
+      width: min(100%, calc(100% - 20px));
+    }
+
+    .hero,
+    .section-card {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <p class="eyebrow">Build Specification / Reward System</p>
+      <h1>강화석 동작 상세 기획서</h1>
+      <p class="lead">
+        이 문서는 <strong>현재 DiceSpell Standalone 빌드에 실제로 구현된 강화석 동작</strong>만을 정리한 상세 스펙이다.
+        즉 “강화석이 어디서 생성되고, 무엇을 바꾸며, 전투 피해 공식과 UI에 어떻게 반영되는가”를
+        기획/구현/QA가 같은 기준으로 읽을 수 있게 묶는다.
+      </p>
+      <div class="meta">
+        <span class="pill chip-gold">최종 갱신 2026-03-28 13:53</span>
+        <span class="pill chip-green">현재 빌드 기준</span>
+        <span class="pill chip-blue">보상 / 상점 / 번들 / 완주 보너스 공통 경로</span>
+        <span class="pill chip-purple">주요 상태값: <code>powerLevel</code></span>
+      </div>
+      <div class="quick-nav">
+        <a class="nav-pill" href="./DiceSpell_GDD_sync.html">종합 GDD</a>
+        <a class="nav-pill" href="./dicespell_development_tracker_kr.html">개발 추적 기획서</a>
+        <a class="nav-pill" href="./dicespell_current_build_reverse_spec_kr.md">현재 빌드 역기획서</a>
+        <a class="nav-pill" href="https://hyoseung22.github.io/dicespell-docs/">공개 문서 포털</a>
+      </div>
+      <div class="stat-grid">
+        <article class="stat-card">
+          <span>핵심 강화 단위</span>
+          <strong>+4 피해</strong>
+          <p>직접 강화석 1회 적용 시 기본적으로 <code>powerGain = 1</code>이며, 족보 1레벨당 기본 피해가 <strong>+4</strong> 증가한다.</p>
+        </article>
+        <article class="stat-card">
+          <span>타깃 선정 방식</span>
+          <strong>랜덤 / 중복 없음</strong>
+          <p>선택 가능한 전체 족보 배열에서 무작위로 뽑는다. 같은 적용 안에서는 같은 족보를 두 번 뽑지 않는다.</p>
+        </article>
+        <article class="stat-card">
+          <span>플레이어 선택 여부</span>
+          <strong>직접 지정 없음</strong>
+          <p>현재 빌드 강화석은 특정 족보를 플레이어가 고르는 구조가 아니다. <strong>무작위 고유 선택</strong>이 기본 문법이다.</p>
+        </article>
+        <article class="stat-card">
+          <span>표시 피드백</span>
+          <strong>즉시 카드 + 로그</strong>
+          <p>보상/상점에서 강화석을 고르면 hand-change feedback 카드와 로그가 즉시 뜨고, 전투 카드에도 <code>강화 +n</code>으로 남는다.</p>
+        </article>
+      </div>
+    </section>
+
+    <div class="section-shell">
+      <aside class="toc">
+        <h2>목차</h2>
+        <ul>
+          <li><a href="#overview">1. 한눈에 보는 동작</a></li>
+          <li><a href="#state">2. 데이터 모델</a></li>
+          <li><a href="#spawn">3. 생성 규칙</a></li>
+          <li><a href="#apply">4. 적용 절차</a></li>
+          <li><a href="#damage">5. 전투 수치 반영</a></li>
+          <li><a href="#feedback">6. UI / 피드백</a></li>
+          <li><a href="#reuse">7. 재사용 경로</a></li>
+          <li><a href="#edge">8. 예외 / 주의사항</a></li>
+          <li><a href="#qa">9. QA 체크리스트</a></li>
+          <li><a href="#source">10. 기준 소스</a></li>
+        </ul>
+      </aside>
+
+      <main class="content">
+        <section class="section-card" id="overview">
+          <p class="eyebrow">1. Overview</p>
+          <h2>한눈에 보는 강화석 동작</h2>
+          <p>
+            강화석은 현재 빌드에서 <strong>족보의 기본 피해를 영구적으로 누적 강화</strong>하는 보상 축이다.
+            구현 문법은 단순하다. 각 족보 슬롯은 <code>powerLevel</code>을 가지며, 이 값이 1 오를 때마다
+            해당 족보가 매치되었을 때만 <strong>기본 피해 +4</strong>를 추가로 얻는다.
+          </p>
+          <div class="two-grid">
+            <article class="summary-card">
+              <h4>현재 빌드 정의</h4>
+              <p>강화석은 무작위 족보 <strong>1~5개</strong>를 골라 <code>powerLevel</code>을 올리는 즉시형 보상이다. 직접 강화석 아이템 자체는 항상 <code>powerGain = 1</code>을 사용한다.</p>
+            </article>
+            <article class="summary-card">
+              <h4>기획적으로 읽는 의미</h4>
+              <p>정령석이 속성 방향을 열어 주는 축이라면, 강화석은 <strong>같은 족보를 더 무겁게 마감시키는 화력 축</strong>이다. 룰을 바꾸지 않고 결과를 증폭한다.</p>
+            </article>
+            <article class="summary-card">
+              <h4>선택 UX 의미</h4>
+              <p>강화석은 즉시 적용형이며 별도 타깃 선택 단계가 없다. 대신 reward/shop 화면 안에서 <strong>무엇이 바뀌었는지</strong>를 피드백 카드로 바로 보여 준다.</p>
+            </article>
+            <article class="summary-card">
+              <h4>전투 시스템 의미</h4>
+              <p>강화석은 MP, 타깃 타입, 속성, 잠금 규칙을 건드리지 않는다. 오직 <strong>매치 성공 시 기본 피해</strong>에만 더해진다.</p>
+            </article>
+          </div>
+
+          <h3>질문형 핵심 정리</h3>
+          <table>
+            <tr><th>질문</th><th>현재 빌드 답변</th></tr>
+            <tr><td>무엇을 강화하는가</td><td>족보 슬롯별 <code>powerLevel</code>. 결과적으로 매치 성공 시 기본 피해가 증가한다.</td></tr>
+            <tr><td>얼마나 오르는가</td><td>레벨 1당 <strong>+4</strong>. 직접 강화석 1회는 기본적으로 +1레벨.</td></tr>
+            <tr><td>누가 타깃을 고르는가</td><td>플레이어 직접 선택 없음. 전체 족보에서 무작위 고유 선택.</td></tr>
+            <tr><td>정령석처럼 빈 슬롯 우선인가</td><td>아니다. 강화석은 모든 족보를 동일한 랜덤 풀로 취급한다.</td></tr>
+            <tr><td>매치 실패 족보도 이득을 받는가</td><td>아니다. 해당 족보가 <strong>실제로 매치되었을 때만</strong> 피해 보너스가 더해진다.</td></tr>
+            <tr><td>상점 가격은 어떻게 계산되는가</td><td><code>55 + (타깃 수 - 1) × 18</code>. 타깃 수가 많을수록 가격이 오른다.</td></tr>
+            <tr><td>직접 강화석 외에도 같은 로직을 쓰는가</td><td>그렇다. 전리품 번들, 몬스터 트로피, 일부 책 완주 보너스도 같은 <code>upgradeHands</code> 경로를 재사용한다.</td></tr>
+            <tr><td>시각 피드백은 있는가</td><td>있다. reward/shop 직후 hand-change feedback 카드, 로그, 전투 카드의 <code>강화 +n</code> 표기가 동기화된다.</td></tr>
+          </table>
+        </section>
+
+        <section class="section-card" id="state">
+          <p class="eyebrow">2. State Model</p>
+          <h2>데이터 모델</h2>
+          <p>
+            강화석은 별도 장비나 소모품 인벤토리로 저장되지 않는다. 현재 빌드는 각 족보 슬롯에 직접
+            <code>powerLevel</code>을 저장하고, 전투 계산 시 이 수치를 읽어 피해 보너스로 변환한다.
+          </p>
+          <table>
+            <tr><th>필드 / 상수</th><th>현재 빌드 의미</th><th>비고</th></tr>
+            <tr><td><code>HAND_UPGRADE_DAMAGE</code></td><td>레벨 1당 추가 기본 피해량</td><td>현재 값 <strong>4</strong></td></tr>
+            <tr><td><code>handSlots[handId].powerLevel</code></td><td>해당 족보의 누적 강화 레벨</td><td>기본값 0</td></tr>
+            <tr><td><code>handPowerDamageBonus(slot)</code></td><td><code>max(0, powerLevel) × 4</code></td><td>음수 불가</td></tr>
+            <tr><td><code>applyUpgradeStone(...)</code></td><td>실제 강화 적용 공통 함수</td><td>보상/상점/번들/완주 보너스 공통 사용</td></tr>
+          </table>
+
+          <h3>초기값과 저장 규칙</h3>
+          <div class="formula">각 족보 초기 상태
+{ locked: false, element: "None", powerLevel: 0 }
+
+강화 후 저장 규칙
+powerLevel = clamp(currentPowerLevel + powerGain, 0, 99)</div>
+          <div class="callout">
+            <strong>설계 포인트:</strong> 강화석은 “족보 자체를 변환”하는 시스템이 아니라 “족보 슬롯에 누적 스택을 새기는 시스템”이다.
+            따라서 저장/세이브/요약/전투 미리보기 모두 같은 상태값을 참조한다.
+          </div>
+
+          <h3>강화 레벨 환산표</h3>
+          <table>
+            <tr><th>powerLevel</th><th>기본 피해 추가량</th><th>읽는 방법</th></tr>
+            <tr><td>0</td><td>+0</td><td>강화 없음</td></tr>
+            <tr><td>1</td><td>+4</td><td>직접 강화석 1회 기본 결과</td></tr>
+            <tr><td>2</td><td>+8</td><td>강화석 2회 누적 또는 <code>powerGain 2</code> 효과</td></tr>
+            <tr><td>3</td><td>+12</td><td>중첩 강화</td></tr>
+            <tr><td>99</td><td>+396</td><td>클램프 상한</td></tr>
+          </table>
+        </section>
+
+        <section class="section-card" id="spawn">
+          <p class="eyebrow">3. Spawn Rules</p>
+          <h2>생성 규칙</h2>
+          <p>
+            강화석은 현재 빌드에서 <strong>기본 전투 보상</strong>, <strong>상점 오퍼</strong>, <strong>번들 보상</strong>,
+            <strong>책 완주 보너스</strong>라는 네 경로로 들어온다. 직접 강화석 오퍼의 생성 확률과 가격은 고정식이다.
+          </p>
+
+          <h3>기본 진입 경로</h3>
+          <table>
+            <tr><th>경로</th><th>현재 빌드 동작</th><th>강화석 관점 의미</th></tr>
+            <tr><td>기본 전투 보상</td><td>기본 후보군에 <code>정령석 / 강화석 / 회복</code>이 들어간다.</td><td>강화석은 표준 전투 보상 축이다.</td></tr>
+            <tr><td>특정 책 시그니처 규칙</td><td><code>고블린의 순찰지(1100001)</code>는 일반/보스 보상에 강화석 선택지 1개를 추가한다.</td><td>강화석 노출 밀도를 높이는 책 정체성.</td></tr>
+            <tr><td>상점</td><td><code>유물 3 / 정령석 3 / 강화석 3</code> 구조로 생성된다.</td><td>즉시 화력 상승을 항상 비교 가능한 층으로 보장.</td></tr>
+            <tr><td>번들/완주 보너스</td><td><code>upgradeHands</code> 효과로 같은 로직을 재사용한다.</td><td>직접 강화석 카드가 아니어도 동일 강화가 발생 가능.</td></tr>
+          </table>
+
+          <h3>직접 강화석 타깃 수 확률</h3>
+          <p>
+            직접 강화석은 먼저 <code>단일</code>과 <code>다중</code>을 80:20으로 나눈 뒤, 다중일 경우 2~5개를 가중치로 뽑는다.
+            실제 최종 확률은 아래와 같다.
+          </p>
+          <table>
+            <tr><th>타깃 수</th><th>생성 방식</th><th>최종 확률</th><th>설명 문구</th></tr>
+            <tr><td>1</td><td>single</td><td><strong>80.0%</strong></td><td><code>랜덤 1개 족보의 기본 피해를 +4 강화합니다.</code></td></tr>
+            <tr><td>2</td><td>multi → 2</td><td><strong>14.0%</strong></td><td><code>랜덤 2개 족보...</code></td></tr>
+            <tr><td>3</td><td>multi → 3</td><td><strong>5.0%</strong></td><td><code>랜덤 3개 족보...</code></td></tr>
+            <tr><td>4</td><td>multi → 4</td><td><strong>0.8%</strong></td><td><code>랜덤 4개 족보...</code></td></tr>
+            <tr><td>5</td><td>multi → 5</td><td><strong>0.2%</strong></td><td><code>랜덤 5개 족보...</code></td></tr>
+          </table>
+
+          <h3>상점 가격 규칙</h3>
+          <div class="formula">강화석 상점 가격
+price = 55 + max(0, targetCount - 1) × 18</div>
+          <table>
+            <tr><th>타깃 수</th><th>가격</th><th>상점 의미</th></tr>
+            <tr><td>1</td><td>55 Gold</td><td>가장 흔한 표준 단일 강화</td></tr>
+            <tr><td>2</td><td>73 Gold</td><td>확장 화력 투자 시작점</td></tr>
+            <tr><td>3</td><td>91 Gold</td><td>다중 강화 희귀 오퍼</td></tr>
+            <tr><td>4</td><td>109 Gold</td><td>매우 희귀</td></tr>
+            <tr><td>5</td><td>127 Gold</td><td>초희귀 고밀도 화력 투자</td></tr>
+          </table>
+        </section>
+
+        <section class="section-card" id="apply">
+          <p class="eyebrow">4. Application Flow</p>
+          <h2>적용 절차</h2>
+          <p>
+            직접 강화석이든 <code>upgradeHands</code> 번들이든, 최종 적용은 전부 같은 공통 함수로 들어간다.
+            따라서 “어디서 받았는가”보다 “어떤 <code>targetCount</code>와 <code>powerGain</code>이 들어왔는가”가 핵심이다.
+          </p>
+
+          <div class="flow">
+            <span class="flow-step">보상 선택 / 상점 구매 / 번들 효과</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step"><code>applyUpgradeStone()</code></span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">무작위 고유 족보 선택</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step"><code>powerLevel += powerGain</code></span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">로그 / UI 요약 갱신</span>
+          </div>
+
+          <h3>실제 적용 알고리즘</h3>
+          <div class="formula">targetCount = clamp(payload.targetCount, 1, HAND_LAYOUT.length)
+powerGain = clamp(payload.powerGain, 1, 99)
+selected = shuffle(HAND_LAYOUT).slice(0, targetCount)
+
+for each handId in selected:
+  handSlots[handId].powerLevel = clamp(current + powerGain, 0, 99)</div>
+
+          <h3>중요한 현재 빌드 해석</h3>
+          <table>
+            <tr><th>항목</th><th>현재 빌드 동작</th><th>정령석과의 차이</th></tr>
+            <tr><td>선택 풀</td><td>항상 전체 <code>HAND_LAYOUT</code> 대상</td><td>정령석은 빈 속성 슬롯 우선 로직이 있다.</td></tr>
+            <tr><td>중복 여부</td><td>한 번의 적용 안에서는 중복 없음</td><td>두 시스템 모두 한 번의 적용에서는 고유 선택이다.</td></tr>
+            <tr><td>플레이어 직접 지정</td><td>없음</td><td>없음</td></tr>
+            <tr><td>직접 효과량</td><td>기본 <code>powerGain = 1</code></td><td>정령석은 피해량 대신 속성을 바꾼다.</td></tr>
+            <tr><td>즉시 반영</td><td>즉시 상태에 기록</td><td>속성 변경과 동일하게 즉시 저장된다.</td></tr>
+          </table>
+
+          <div class="callout">
+            <strong>주의:</strong> 강화석은 현재 빌드에서 “약한 족보를 우선 보정”하거나 “비강화 족보를 우선 고르는” 보정이 없다.
+            이미 강화된 족보가 다시 뽑히는 것도 허용한다.
+          </div>
+        </section>
+
+        <section class="section-card" id="damage">
+          <p class="eyebrow">5. Combat Effect</p>
+          <h2>전투 수치 반영</h2>
+          <p>
+            강화석은 피해 공식을 크게 갈아엎지 않는다. 기존 족보 판정으로 얻은 <code>baseDamage</code>에만 추가량을 더한다.
+            따라서 동일 족보를 같은 주사위 구조로 맞췄을 때 <strong>더 무거운 피니시</strong>가 나오는 방식이다.
+          </p>
+
+          <h3>실제 적용 공식</h3>
+          <div class="formula">matchInfo.matched
+  ? baseDamage = matchInfo.baseDamage + (powerLevel × 4)
+  : baseDamage = 0
+
+finalDamage =
+  floor(baseDamage × totalMultiplier × affinity × statusMultiplier × passiveMultiplier × shieldedMultiplier)</div>
+
+          <h3>중요한 현재 빌드 의미</h3>
+          <table>
+            <tr><th>항목</th><th>현재 빌드 의미</th></tr>
+            <tr><td>매치 성공 여부</td><td>매치 실패면 강화 수치가 있어도 피해는 0이다.</td></tr>
+            <tr><td>적용 시점</td><td>기본 피해 단계에서 먼저 더해지고, 이후 속성 상성/아티팩트/붕괴 배율과 함께 최종 피해로 확장된다.</td></tr>
+            <tr><td>영향 없는 항목</td><td>MP 비용, 족보 잠금, 타깃 타입, 속성, 상단 합계, 리롤 구조는 바뀌지 않는다.</td></tr>
+            <tr><td>전투 미리보기</td><td>세션 요약 UI도 이미 강화 보너스를 포함한 <code>baseDamage</code>를 보여 준다.</td></tr>
+          </table>
+
+          <h3>예시</h3>
+          <table>
+            <tr><th>상황</th><th>현재 빌드 해석</th></tr>
+            <tr><td>기본 피해 18인 족보, 강화 0</td><td>매치 성공 시 기본 피해 18</td></tr>
+            <tr><td>기본 피해 18인 족보, 강화 +1</td><td>매치 성공 시 기본 피해 22</td></tr>
+            <tr><td>기본 피해 18인 족보, 강화 +2</td><td>매치 성공 시 기본 피해 26</td></tr>
+            <tr><td>강화 +2지만 매치 실패</td><td>피해 0. 강화 수치가 있어도 발동하지 않음</td></tr>
+          </table>
+        </section>
+
+        <section class="section-card" id="feedback">
+          <p class="eyebrow">6. Feedback Layer</p>
+          <h2>UI / 피드백</h2>
+          <p>
+            현재 빌드의 강화석 UX는 “랜덤 적용이라도 결과는 즉시 읽힌다” 쪽에 맞춰져 있다.
+            즉 플레이어가 타깃을 고르지 못하는 대신, 바뀐 결과를 같은 화면에서 확인하게 한다.
+          </p>
+
+          <h3>reward / shop 직후 피드백 카드</h3>
+          <table>
+            <tr><th>항목</th><th>현재 빌드 동작</th></tr>
+            <tr><td>트리거 액션</td><td><code>choose-reward</code>, <code>buy-shop-offer</code>, <code>infuse-hand</code></td></tr>
+            <tr><td>강화만 바뀐 경우 제목</td><td><code>강화석이 족보를 벼렸습니다</code></td></tr>
+            <tr><td>강화만 바뀐 경우 리드 문장</td><td><code>강화된 족보는 같은 판 구조에서도 더 무거운 피니시를 만들 수 있습니다.</code></td></tr>
+            <tr><td>표시 내용</td><td>변경된 족보 이름, 강화 전 수치, 강화 후 수치</td></tr>
+          </table>
+
+          <h3>전투 화면 표기</h3>
+          <table>
+            <tr><th>표시 위치</th><th>현재 빌드 표현</th></tr>
+            <tr><td>족보 카드</td><td><code>강화 +n</code> 또는 <code>기본</code></td></tr>
+            <tr><td>전투 미리보기</td><td>이미 강화 보너스를 반영한 기본 피해 표시</td></tr>
+            <tr><td>로그</td><td><code>강화석: 풀하우스 +4</code> 같은 형태로 대상 라벨과 증가량 기록</td></tr>
+            <tr><td>상점 섹션</td><td><code>강화석 3</code> 카테고리로 고정 배치</td></tr>
+          </table>
+
+          <div class="callout">
+            <strong>현재 UX 철학:</strong> 강화석은 “어떤 족보를 직접 고를지 고민하는 조준형 보상”이 아니라,
+            “랜덤 강화가 들어갔더라도 이번 선택이 다음 페이지 기대를 어떻게 바꿨는지 즉시 읽게 하는 보상”으로 설계되어 있다.
+          </div>
+        </section>
+
+        <section class="section-card" id="reuse">
+          <p class="eyebrow">7. Reuse Paths</p>
+          <h2>재사용 경로</h2>
+          <p>
+            강화석은 직접 아이템만 있는 시스템이 아니다. 현재 빌드에서는 여러 콘텐츠가 <code>upgradeHands</code>를 통해
+            같은 동작을 재사용한다. 즉 “강화석 축”은 경제/테마/완주 보너스에도 이미 연결되어 있다.
+          </p>
+
+          <h3>직접 강화석 외 재사용 사례</h3>
+          <table>
+            <tr><th>출처</th><th>현재 빌드 내용</th><th>강화석과의 관계</th></tr>
+            <tr><td>책 시그니처 규칙</td><td><code>고블린의 순찰지</code>는 일반/보스 보상에 강화석 선택지 1개 추가</td><td>직접 강화석 노출 빈도 증가</td></tr>
+            <tr><td>책 테마 전리품</td><td>고블린 전리품은 <code>Gold +35/45 + upgradeHands</code></td><td>경제 테마가 화력 강화로 연결됨</td></tr>
+            <tr><td>몬스터 트로피</td><td><code>균열 석판 조각</code>은 Shield와 함께 무작위 족보 1개 강화</td><td>개별 적 처치 보상도 같은 경로 사용</td></tr>
+            <tr><td>완주 보너스</td><td>여러 책이 <code>targetCount 1~2</code>, 일부는 <code>powerGain 2</code> 사용</td><td>직접 강화석보다 강한 변형 효과 존재</td></tr>
+          </table>
+
+          <h3>완주 보너스에서의 강화 변형</h3>
+          <table>
+            <tr><th>예시</th><th>효과</th><th>의미</th></tr>
+            <tr><td><code>1000002</code> 정리 수당</td><td>무작위 족보 2개 강화</td><td>다중 분산형 강화</td></tr>
+            <tr><td><code>1000003</code> 금서 잔향</td><td>무작위 족보 1개 <strong>대폭 강화</strong> (<code>powerGain 2</code>)</td><td>직접 강화석보다 높은 단일 집중 강화</td></tr>
+            <tr><td><code>1200004</code> 태엽 재조율</td><td>무작위 족보 2개 강화</td><td>후반 해금 책의 분산 강화 예시</td></tr>
+          </table>
+        </section>
+
+        <section class="section-card" id="edge">
+          <p class="eyebrow">8. Edge Cases</p>
+          <h2>예외 / 주의사항</h2>
+          <table>
+            <tr><th>항목</th><th>현재 빌드 해석</th></tr>
+            <tr><td>비강화 우선 선택 없음</td><td>강화되지 않은 족보를 우선 보정하지 않는다. 이미 강화된 족보가 또 뽑힐 수 있다.</td></tr>
+            <tr><td>잠긴 족보도 대상 가능</td><td>선택 풀은 <code>HAND_LAYOUT</code> 전체다. 잠금 여부는 적용 풀에서 제외 조건이 아니다.</td></tr>
+            <tr><td>속성 여부 무관</td><td>속성이 이미 새겨진 족보도 강화 대상이 될 수 있다.</td></tr>
+            <tr><td>한 번의 적용 내 중복 없음</td><td><code>shuffle(...).slice(...)</code>라서 동일 적용 안에서는 중복이 없다.</td></tr>
+            <tr><td>여러 번 적용 간 중복 가능</td><td>다음 강화석/번들에서는 같은 족보가 다시 뽑힐 수 있다.</td></tr>
+            <tr><td>직접 강화석 powerGain</td><td>항상 1. 다만 내부 번들/완주 보너스는 2 이상을 넣을 수 있다.</td></tr>
+            <tr><td>피드백 카드 범위</td><td>reward/shop 액션에서 가장 명확하게 노출된다. 내부 효과 재사용 경로는 상태는 같아도 같은 카드가 항상 보장되지는 않는다.</td></tr>
+            <tr><td>상한</td><td><code>powerLevel</code>은 99에서 클램프된다.</td></tr>
+          </table>
+        </section>
+
+        <section class="section-card" id="qa">
+          <p class="eyebrow">9. QA Checklist</p>
+          <h2>QA 체크리스트</h2>
+          <table>
+            <tr><th>검증 항목</th><th>확인 기준</th></tr>
+            <tr><td>직접 강화석 적용</td><td>선택 즉시 로그와 hand-change feedback 카드가 뜨고, 최소 1개 이상의 족보 <code>powerLevel</code>이 오른다.</td></tr>
+            <tr><td>전투 미리보기 반영</td><td>강화된 족보는 매치 성공 시 요약 UI의 기본 피해 수치가 증가해 보인다.</td></tr>
+            <tr><td>매치 실패 예외</td><td>강화된 족보라도 실제 매치 실패 시 피해가 0인지 확인한다.</td></tr>
+            <tr><td>상점 가격</td><td>타깃 수 1/2/3/4/5에 대해 가격이 55/73/91/109/127로 계산되는지 확인한다.</td></tr>
+            <tr><td>랜덤 고유 선택</td><td>한 번의 다중 강화가 같은 족보를 두 번 찍지 않는지 확인한다.</td></tr>
+            <tr><td>상태 지속성</td><td>세이브/로드 후에도 <code>powerLevel</code>과 <code>강화 +n</code> 표기가 유지되는지 확인한다.</td></tr>
+            <tr><td>완주 보너스 변형</td><td><code>powerGain 2</code> 같은 내부 변형이 실제로 +8 피해로 반영되는지 확인한다.</td></tr>
+          </table>
+        </section>
+
+        <section class="section-card" id="source">
+          <p class="eyebrow">10. Source of Truth</p>
+          <h2>기준 소스</h2>
+          <p>
+            이 문서는 아래 현재 빌드 구현을 읽고 정리한 결과다. 즉 강화석 동작의 단일 근거는 소스코드와 현재 문서 세트다.
+          </p>
+          <ul class="source-list">
+            <li><a href="./DiceSpell_GDD_sync.html">종합 GDD</a> - 상점/보상/현재 빌드 설명</li>
+            <li><a href="./dicespell_development_tracker_kr.html">개발 추적 기획서</a> - 상점 3/3/3, 즉시 피드백 UX 이력</li>
+            <li><code>dice-spell-standalone/src/game-engine.js</code> - <code>HAND_UPGRADE_DAMAGE</code>, <code>createUpgradeStoneReward</code>, <code>applyUpgradeStone</code>, 피해 공식</li>
+            <li><code>dice-spell-standalone/src/app.js</code> - hand-change feedback, <code>강화 +n</code> 표기, 상점 카테고리 렌더</li>
+            <li><code>dice-spell-standalone/src/data.js</code> - 책 시그니처와 완주 보너스의 <code>upgradeHands</code> 사용 사례</li>
+          </ul>
+
+          <div class="footer">
+            이 문서는 <strong>현재 빌드 사실 정리용</strong>이다. 즉 “강화석을 앞으로 어떻게 바꿀지”가 아니라
+            “지금 강화석이 실제로 어떻게 동작하는지”를 기록한다. 다음에 규칙이 바뀌면 이 문서와 GDD/Tracker를 같은 사이클에서 함께 갱신한다.
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

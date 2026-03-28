@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DiceSpell Docs Portal</title>
+  <style>
+    :root {
+      --bg: #120d09;
+      --bg-deep: #0c0907;
+      --panel: rgba(30, 22, 15, 0.94);
+      --panel-strong: rgba(42, 30, 19, 0.98);
+      --panel-soft: rgba(27, 20, 14, 0.82);
+      --line: rgba(212, 168, 84, 0.18);
+      --line-strong: rgba(212, 168, 84, 0.34);
+      --text: #efe2c8;
+      --muted: #b8a585;
+      --gold: #d4a854;
+      --gold-deep: #a87a2e;
+      --accent: #8fbf72;
+      --danger: #d68b7a;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(212, 168, 84, 0.12), transparent 28%),
+        radial-gradient(circle at 80% 0%, rgba(143, 191, 114, 0.08), transparent 22%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+    }
+
+    a { color: inherit; }
+
+    main {
+      width: min(1240px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 48px 0 88px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line-strong);
+      border-radius: 30px;
+      padding: 34px 34px 30px;
+      background: linear-gradient(135deg, rgba(48, 35, 22, 0.94), rgba(18, 14, 10, 0.98));
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -80px auto;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212, 168, 84, 0.18), transparent 70%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--gold);
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(40px, 7vw, 68px);
+      line-height: 0.94;
+      letter-spacing: -0.03em;
+    }
+
+    .lead {
+      width: min(850px, 100%);
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .meta,
+    .quick-nav,
+    .link-list,
+    .mini-links,
+    .status-grid,
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .meta { margin-top: 22px; }
+    .quick-nav { margin-top: 26px; }
+
+    .pill,
+    .nav-pill,
+    .mini-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      text-decoration: none;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 13px;
+    }
+
+    .nav-pill {
+      color: var(--text);
+      border-color: rgba(212, 168, 84, 0.24);
+      background: rgba(212, 168, 84, 0.08);
+    }
+
+    .overview-grid,
+    .section-grid {
+      display: grid;
+      gap: 18px;
+      margin-top: 24px;
+    }
+
+    .overview-grid {
+      grid-template-columns: 1.15fr 1fr 1fr;
+    }
+
+    .section-shell {
+      margin-top: 42px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 16px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(26px, 4vw, 34px);
+      line-height: 1.04;
+    }
+
+    .section-head p {
+      margin: 8px 0 0;
+      max-width: 760px;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .section-tag {
+      color: var(--gold);
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .section-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card,
+    .overview-card {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 24px;
+      background: linear-gradient(180deg, var(--panel) 0%, var(--panel-soft) 100%);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+    }
+
+    .overview-card strong {
+      display: block;
+      font-size: 16px;
+      margin-top: 8px;
+    }
+
+    .overview-card p,
+    .card p,
+    .card li {
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .card h3 {
+      margin: 12px 0 8px;
+      font-size: 28px;
+      line-height: 1.08;
+    }
+
+    .card ul {
+      margin: 16px 0 0;
+      padding-left: 18px;
+    }
+
+    .card .subhead {
+      margin: 16px 0 10px;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .button-row,
+    .link-list {
+      margin-top: 18px;
+    }
+
+    .button,
+    .link-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 16px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .button:hover,
+    .link-chip:hover,
+    .nav-pill:hover,
+    .mini-link:hover {
+      transform: translateY(-1px);
+    }
+
+    .button {
+      color: var(--text);
+      border: 1px solid rgba(212, 168, 84, 0.30);
+      background: linear-gradient(180deg, rgba(212, 168, 84, 0.18), rgba(212, 168, 84, 0.08));
+    }
+
+    .button.secondary,
+    .link-chip {
+      color: var(--text);
+      border: 1px solid rgba(143, 191, 114, 0.24);
+      background: linear-gradient(180deg, rgba(143, 191, 114, 0.16), rgba(143, 191, 114, 0.06));
+    }
+
+    .status-grid {
+      margin-top: 12px;
+    }
+
+    .status-box {
+      flex: 1 1 180px;
+      min-width: 180px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .status-box strong {
+      display: block;
+      font-size: 18px;
+      margin-top: 6px;
+      color: var(--text);
+    }
+
+    .status-box span {
+      color: var(--gold);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .footer {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 1040px) {
+      .overview-grid,
+      .section-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 820px) {
+      main { padding-top: 24px; }
+      .hero { padding: 24px 22px; border-radius: 24px; }
+      .card h3 { font-size: 24px; }
+      .button,
+      .link-chip { width: 100%; justify-content: flex-start; }
+      .quick-nav { gap: 8px; }
+      .nav-pill { width: calc(50% - 4px); justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">DiceSpell Documentation Hub</p>
+      <h1>DiceSpell<br>Docs Portal</h1>
+      <p class="lead">
+        이 포털은 단순 문서 링크 모음이 아니라, <strong>기준 기획서 → 실행 추적 문서 → 역할별 전달 패킷</strong>으로 이어지는
+        실제 제작 허브를 목표로 구성된 웹뷰입니다. 기준 기획의 방향성, 현재 구현 상태, 그리고 프로그래머 / UI / 아트 담당자에게
+        바로 넘길 수 있는 상세 사양 문서를 한 주소에서 읽을 수 있도록 정리합니다.
+      </p>
+      <div class="meta">
+        <span class="pill">기준 문서 + 실행 문서 + 전달 패킷</span>
+        <span class="pill">GitHub Pages 공개 포털</span>
+        <span class="pill">문서 전체 세트 배포</span>
+        <span class="pill">hyoseung22.github.io/dicespell-docs</span>
+      </div>
+      <div class="quick-nav">
+        <a class="nav-pill" href="#foundation">기준 문서</a>
+        <a class="nav-pill" href="#execution">실행 / 추적</a>
+        <a class="nav-pill" href="#handoff-onboarding">온보딩 패킷</a>
+        <a class="nav-pill" href="#handoff-overrun">오버런 패킷</a>
+        <a class="nav-pill" href="#maps">리버스 / 코드맵</a>
+        <a class="nav-pill" href="#theme">테마 / 부가 문서</a>
+        <a class="nav-pill" href="./dicespell_game_flow_surface_handoff_summary_kr.md">Run Table 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_anchor_summary_kr.md">Run Table 토큰 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_delivery_workboard_summary_kr.md">Run Table 전달 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_closing_summary_kr.md">Run Table closing 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_evidence_manifest_summary_kr.md">Run Table evidence 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_refinement_queue_summary_kr.md">Run Table queue 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_atlas_route_node_stage_summary_kr.md">Run Table atlas 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_atlas_live_kickoff_summary_kr.md">Run Table atlas kickoff 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_artifact_stub_summary_kr.md">Run Table stub 킷 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_manifest_fill_summary_kr.md">Run Table manifest fill 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_atlas_handoff_scorecard_summary_kr.md">Run Table atlas scorecard 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_atlas_filled_archive_examples_summary_kr.md">Run Table atlas exemplar 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_atlas_archive_file_map_summary_kr.md">Run Table atlas file map 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_atlas_semantic_anchor_summary_kr.md">Run Table atlas semantic anchor 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_battle_live_kickoff_summary_kr.md">Run Table battle kickoff 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_battle_semantic_anchor_summary_kr.md">Run Table battle semantic anchor 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_battle_archive_file_map_summary_kr.md">Run Table battle file map 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_battle_filled_archive_examples_summary_kr.md">Run Table battle exemplar 요약</a>
+        <a class="nav-pill" href="./artifacts/run-table-token-delivery/examples/README.md">Run Table manifest exemplar</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_atlas_required_artifacts_summary_kr.md">Run Table atlas artifacts 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_atlas_candidate_review_summary_kr.md">Run Table atlas review 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_queue_closing_summary_kr.md">Run Table queue closing 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_queue_readiness_summary_kr.md">Run Table readiness 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_queue_signoff_summary_kr.md">Run Table queue signoff 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_followup_reopen_summary_kr.md">Run Table reopen 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_oath_live_kickoff_summary_kr.md">Run Table oath kickoff 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_oath_semantic_anchor_summary_kr.md">Run Table oath semantic anchor 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_oath_document_stack_summary_kr.md">Run Table oath document stack 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_oath_filled_archive_examples_summary_kr.md">Run Table oath exemplar 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_oath_handoff_scorecard_summary_kr.md">Run Table oath scorecard 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_oath_required_artifacts_summary_kr.md">Run Table oath artifacts 요약</a>
+        <a class="nav-pill" href="./dicespell_game_flow_token_oath_candidate_review_summary_kr.md">Run Table oath review 요약</a>
+      </div>
+    </section>
+
+    <section class="overview-grid">
+      <article class="overview-card">
+        <p class="eyebrow">Portal Structure</p>
+        <strong>1. 기준 기획서</strong>
+        <p>전체 구조와 핵심 시스템의 기준점을 제공하는 상위 문서입니다.</p>
+        <strong>2. 실행 추적 문서</strong>
+        <p>현재 스냅샷, 우선순위, 리스크, 변경 이력을 따라가는 운영 문서입니다.</p>
+        <strong>3. 전달 패킷</strong>
+        <p>프로그래머, UI, 아트 담당자가 실제 작업에 들어갈 수 있게 분리된 handoff 사양입니다.</p>
+      </article>
+
+      <article class="overview-card">
+        <p class="eyebrow">Documentation Intent</p>
+        <strong>핵심 시스템 전체 구현이 최종 목표</strong>
+        <p>
+          현재 자동화의 직접 목적은 기능을 무작정 추가하는 것이 아니라, 핵심 시스템 전체 구현이 가능하도록
+          문서를 handoff-ready 상태까지 밀어 올리는 것입니다.
+        </p>
+      </article>
+
+      <article class="overview-card">
+        <p class="eyebrow">Handoff Standard</p>
+        <strong>역할별 전달 가능성 기준</strong>
+        <p>
+          각 패킷은 가능한 한 프로그래머용 구현 기준, UI 상태 정의, 아트 에셋 요구사항, 검수 기준을 분리해
+          실제 제작자가 바로 착수할 수 있는 수준을 목표로 합니다.
+        </p>
+      </article>
+    </section>
+
+    <section class="section-shell" id="foundation">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Foundation</p>
+          <h2>기준 문서</h2>
+          <p>프로젝트의 기준 방향과 전체 시스템 정의를 잡아주는 상위 허브입니다. 포털의 다른 문서들은 모두 이 기준에서 파생됩니다.</p>
+        </div>
+        <span class="section-tag">Master / Source</span>
+      </div>
+      <div class="section-grid">
+        <article class="card">
+          <p class="eyebrow">Primary GDD</p>
+          <h3>종합 게임 기획서</h3>
+          <p>
+            DiceSpell의 원안과 현재 빌드 차이를 한 문서에서 읽을 수 있도록 묶은 기준 기획서입니다. 전투 규칙,
+            몬스터, 아티팩트, 메타 구조, 책 구조 등 전체 게임의 설계 축을 정리합니다.
+          </p>
+          <ul>
+            <li>전체 게임 루프와 핵심 시스템 기준점</li>
+            <li>원안 대비 현재 빌드 반영 상태</li>
+            <li>추후 handoff 문서들이 참조하는 상위 기준 문서</li>
+          </ul>
+          <div class="button-row">
+            <a class="button" href="./gdd.html">기획서 열기</a>
+            <a class="button secondary" href="./DiceSpell_GDD_sync.html">동기화 원본</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="eyebrow">Blueprint</p>
+          <h3>청사진 / 리버스 기준</h3>
+          <p>
+            현재 스탠드얼론 빌드의 구조를 역기획 관점으로 보완한 문서 묶음입니다. 기준 기획과 실제 구현 사이를 해석하고,
+            제작자 전달 시 어떤 식으로 쪼개야 하는지 보는 데 적합합니다.
+          </p>
+          <div class="link-list">
+            <a class="link-chip" href="./dicespell_standalone_blueprint_kr.md">스탠드얼론 청사진</a>
+            <a class="link-chip" href="./dicespell_current_build_reverse_spec_kr.md">현재 빌드 역기획서</a>
+            <a class="link-chip" href="./dicespell_reverse_design_kr.md">리버스 디자인 메모</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-shell" id="execution">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Execution Layer</p>
+          <h2>실행 / 추적 / 운영 문서</h2>
+          <p>현재 무엇이 구현되었고, 어떤 리스크와 우선순위가 남았는지, 문서/검증/자동화가 어떤 흐름으로 이어지는지 확인하는 실행 레이어입니다.</p>
+        </div>
+        <span class="section-tag">Tracker / Runtime</span>
+      </div>
+      <div class="section-grid">
+        <article class="card">
+          <p class="eyebrow">Live Tracker</p>
+          <h3>개발 추적 기획서</h3>
+          <p>
+            현재 구현 스냅샷, 우선순위, 리스크, 시간 기준 변경 이력을 추적하는 문서입니다.
+            무엇을 다음에 문서화/구현/검증해야 하는지 가장 빠르게 읽을 수 있는 운영 문서입니다.
+          </p>
+          <div class="button-row">
+            <a class="button secondary" href="./development-tracker.html">추적 문서 열기</a>
+            <a class="button secondary" href="./dicespell_development_tracker_kr.html">한글 원본</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="eyebrow">Automation Record</p>
+          <h3>자동화 로그 / 실행 맵</h3>
+          <p>
+            크론 자동화가 무엇을 보강했고, 어떤 문서와 검증을 거쳤는지, 현재 코드 구조를 어디까지 읽고 있는지 확인할 수 있는 보조 문서군입니다.
+          </p>
+          <div class="link-list">
+            <a class="link-chip" href="./dicespell_automation_run_log_kr.md">자동화 실행 로그</a>
+            <a class="link-chip" href="./dicespell_current_build_code_map_kr.md">현재 빌드 코드 맵</a>
+            <a class="link-chip" href="./dicespell_claude_reimplementation_prompt_kr.md">재구성 프롬프트</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-shell" id="handoff-onboarding">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Handoff Packet</p>
+          <h2>첫 플레이 온보딩 패킷</h2>
+          <p>첫 진입 경험을 bounded UX 흐름으로 고정하기 위한 전달 문서 묶음입니다. 프로그래머, UI, 아트, QA가 각각 어디를 기준으로 움직여야 하는지 나뉘어 있습니다.</p>
+        </div>
+        <span class="section-tag">Programmer / UI / Art / QA</span>
+      </div>
+      <div class="section-grid">
+        <article class="card">
+          <p class="eyebrow">First Run Onboarding</p>
+          <h3>온보딩 메인 전달 묶음</h3>
+          <p>
+            첫 실행 UX 흐름, 역할별 handoff, acceptance 기준, production cutsheet, source-of-truth 연결을 한 번에 확인할 수 있는 메인 패킷입니다. 최근에는 마지막 ending surface까지 `B-4 ending packet`으로 닫았고, `entrypoint matrix`, `owner handoff packet`, `gap ledger`, `Commit 1 floor surgery sheet`, `Commit 2 closing surgery sheet`, `비주얼 자산 패킷`, `컷오버 준비 보드`, `런타임 시맨틱 앵커 패킷`, `런타임 리허설 패킷`, `증거 매니페스트 패킷`, `아카이브 패킷`, `B-1 live kickoff packet`, `B-1 review packet`, `B-1 required artifacts packet`, `B-1 artifact stub packet`, `B-1 semantic anchor packet`, `B-1 manifest packet`에 이어 이번에는 새 `B-1 archive bootstrap packet`까지 추가해 library -> battle -> reward/shop -> ending 전 surface뿐 아니라 `line number가 조금 밀려도 어디를 같은 책임으로 다시 찾아야 하는가`, `실제 코드를 열기 직전에 무엇을 아직 열지 말아야 하는가`, `handoff-ready를 주장하려면 정확히 어떤 파일/캡처/메모를 같은 이름으로 넘겨야 하는가`, `좋아, 그 제출물을 실제로 어느 폴더 구조와 어떤 stage bundle로 보관해야 다음 사람과 다음 자동화가 같은 위치에서 바로 찾지?`, `kickoff 뒤 어떤 evidence가 모여야 B-1 green이고 누가 B-2 battle을 열지?`, `그 사이 review-ready라고 말하려면 정확히 어떤 artifact 8종과 어떤 문장 정렬이 필요하지?`, `archive를 실제로 열었을 때 B-1 첫 줄은 무엇으로 시작해야 library-only 문장이 유지되지?`, `archive를 열자마자 starter manifest 다섯 칸은 어떤 stage 문장으로 먼저 채워야 review-ready/green이 다시 섞이지 않지?`, `그리고 실제 코드를 열기 직전에 정확히 어느 함수/DOM/캡처를 같은 책임으로 다시 찾아야 line drift가 stage drift로 번지지 않지?`, `그 다음 실제 archive를 열자마자 어떤 폴더와 어떤 starter bundle을 먼저 만들어야 bootstrap-ready와 review-ready가 다시 섞이지 않지?`, `starter bundle을 다 만든 뒤 review-ready candidate라고 말하려면 manifest/log/note/capture 8종은 실제로 어떤 문장 밀도로 채워져야 하지?`, 그리고 `좋아, 그 문장들을 실제로 누가 어느 시점에 쓰고 review-ready / QA pass / PM green / B-2 unlock을 어디서 나누지?`, 마지막으로 `좋아, 이제 B-1 문서는 충분한데 baseline 설명 / source packet / readable summary / archive exemplar / signoff 문서는 정확히 어느 순서로 읽지?`까지 포털 첫 화면에서 바로 찾게 정리했습니다.
+          </p>
+          <p class="subhead">읽기용 빠른 보기</p>
+          <div class="link-list">
+            <a class="link-chip" href="./dicespell_first_run_onboarding_summary_kr.md">요약 페이지</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_library_summary_kr.md">B-1 Library 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_live_kickoff_summary_kr.md">B-1 Live Kickoff 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_review_summary_kr.md">B-1 Review 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_required_artifacts_summary_kr.md">B-1 Artifacts 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_artifact_stub_summary_kr.md">B-1 Stub Kit 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_manifest_summary_kr.md">B-1 Manifest 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_semantic_anchor_summary_kr.md">B-1 Semantic Anchor 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_archive_bootstrap_summary_kr.md">B-1 Archive Bootstrap 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_filled_archive_examples_summary_kr.md">B-1 Filled Archive 예시 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_handoff_scorecard_summary_kr.md">B-1 Handoff Scorecard 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_document_stack_summary_kr.md">B-1 Document Stack 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_archive_file_map_summary_kr.md">B-1 Archive File Map 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b2_battle_summary_kr.md">B-2 Battle 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b3_reward_shop_summary_kr.md">B-3 Reward/Shop 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b4_ending_summary_kr.md">B-4 Ending 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_entrypoint_matrix_summary_kr.md">진입점 매트릭스 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_owner_handoff_summary_kr.md">오너 핸드오프 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_gap_ledger_summary_kr.md">구현 갭 레저 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_cutover_readiness_summary_kr.md">컷오버 준비 보드 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_signoff_ladder_summary_kr.md">사인오프 래더 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_commit1_floor_surgery_summary_kr.md">Commit 1 수술 시트 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_commit2_closing_surgery_summary_kr.md">Commit 2 수술 시트 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_semantic_anchor_summary_kr.md">런타임 시맨틱 앵커 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_rehearsal_summary_kr.md">런타임 리허설 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_evidence_manifest_summary_kr.md">증거 매니페스트 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_artifact_archive_summary_kr.md">아카이브 패킷 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_archive_bootstrap_summary_kr.md">아카이브 부트스트랩 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_manifest_fill_summary_kr.md">매니페스트 작성 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_filled_manifest_examples_summary_kr.md">채워진 매니페스트 예시집 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_commit1_live_kickoff_summary_kr.md">Commit 1 라이브 킥오프 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_commit2_live_kickoff_summary_kr.md">Commit 2 라이브 킥오프 요약</a>
+          </div>
+          <p class="subhead">원본 전달 문서</p>
+          <div class="link-list">
+            <a class="link-chip" href="./dicespell_first_run_onboarding_handoff_kr.md">핸드오프</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_screen_packet_kr.md">스크린 패킷</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_acceptance_matrix_kr.md">Acceptance Matrix</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_integration_workorder_kr.md">통합 작업지시</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_library_packet_kr.md">B-1 Library Packet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_live_kickoff_packet_kr.md">B-1 Live Kickoff Packet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_review_packet_kr.md">B-1 Review Packet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_required_artifacts_packet_kr.md">B-1 Required Artifacts Packet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_artifact_stub_packet_kr.md">B-1 Artifact Stub Packet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_manifest_packet_kr.md">B-1 Manifest Packet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_semantic_anchor_packet_kr.md">B-1 Semantic Anchor Packet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_archive_bootstrap_packet_kr.md">B-1 Archive Bootstrap Packet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_filled_archive_examples_kr.md">B-1 Filled Archive 예시집</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_handoff_scorecard_kr.md">B-1 Handoff Scorecard</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_document_stack_packet_kr.md">B-1 Document Stack Packet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_archive_file_map_packet_kr.md">B-1 Archive File Map Packet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_readiness_board_kr.md">B-1 Readiness Board</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_readiness_summary_kr.md">B-1 Readiness 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b2_battle_packet_kr.md">B-2 Battle Packet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b3_reward_shop_packet_kr.md">B-3 Reward/Shop Packet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b4_ending_packet_kr.md">B-4 Ending Packet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_runtime_stack_packet_kr.md">온보딩 런타임 스택 Packet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_runtime_stack_summary_kr.md">런타임 스택 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_handoff_scorecard_kr.md">온보딩 핸드오프 스코어카드</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_handoff_scorecard_summary_kr.md">핸드오프 스코어카드 요약</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_owner_workboard_kr.md">온보딩 오너 워크보드</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_owner_workboard_summary_kr.md">오너 워크보드 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_entrypoint_matrix_kr.md">진입점 매트릭스</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_owner_handoff_packet_kr.md">오너 핸드오프 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_gap_ledger_kr.md">구현 갭 레저</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_cutover_readiness_board_kr.md">컷오버 준비 보드</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_signoff_ladder_kr.md">사인오프 래더</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_document_stack_packet_kr.md">문서 스택 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_document_stack_summary_kr.md">문서 스택 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_commit1_floor_surgery_sheet_kr.md">Commit 1 수술 시트</a>
+            <a class="link-chip" href="./dicespell_overrun_commit2_closing_surgery_sheet_kr.md">Commit 2 수술 시트</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_visual_asset_packet_kr.md">비주얼 자산 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_visual_asset_summary_kr.md">비주얼 자산 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_semantic_anchor_packet_kr.md">런타임 시맨틱 앵커 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_rehearsal_packet_kr.md">런타임 리허설 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_evidence_manifest_kr.md">증거 매니페스트 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_artifact_archive_packet_kr.md">아카이브 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_archive_bootstrap_packet_kr.md">아카이브 부트스트랩 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_manifest_fill_packet_kr.md">매니페스트 작성 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_filled_manifest_examples_kr.md">채워진 매니페스트 예시집</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_artifact_stub_packet_kr.md">증거 스텁 킷 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_artifact_stub_summary_kr.md">증거 스텁 킷 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_commit1_live_kickoff_packet_kr.md">Commit 1 라이브 킥오프 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_commit1_live_kickoff_summary_kr.md">Commit 1 라이브 킥오프 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_commit2_live_kickoff_packet_kr.md">Commit 2 라이브 킥오프 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_commit2_live_kickoff_summary_kr.md">Commit 2 라이브 킥오프 요약</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="eyebrow">Production Assets</p>
+          <h3>온보딩 제작 기준</h3>
+          <p>
+            제작자 관점에서 바로 참조할 수 있는 컷시트와 기준 맵입니다. 아트/UI 리소스와 실제 구현 시 source-of-truth를 정리합니다.
+          </p>
+          <div class="link-list">
+            <a class="link-chip" href="./dicespell_first_run_onboarding_production_cutsheet_kr.md">Production Cutsheet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_source_of_truth_map_kr.md">Source of Truth Map</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_runtime_stack_packet_kr.md">Runtime Stack Packet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_runtime_stack_summary_kr.md">Runtime Stack Summary</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_review_packet_kr.md">B-1 Review Packet</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_b1_review_summary_kr.md">B-1 Review Summary</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_handoff_scorecard_kr.md">Handoff Scorecard</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_handoff_scorecard_summary_kr.md">Handoff Scorecard Summary</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_owner_workboard_kr.md">Owner Workboard</a>
+            <a class="link-chip" href="./dicespell_first_run_onboarding_owner_workboard_summary_kr.md">Owner Workboard Summary</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-shell" id="handoff-overrun">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Handoff Packet</p>
+          <h2>오버런 이벤트 패킷</h2>
+          <p>책 클리어 이후 이어지는 오버런 구간을 페이지 단위의 실제 제작 대상으로 끌어올리기 위해 구성한 전달 문서 묶음입니다.</p>
+        </div>
+        <span class="section-tag">Event / Reward / Transition</span>
+      </div>
+      <div class="section-grid">
+        <article class="card">
+          <p class="eyebrow">Overrun Event</p>
+          <h3>오버런 메인 패킷</h3>
+          <p>
+            오버런 UX, 화면 정의, 구현 패킷, 통합 작업지시, acceptance와 smoke migration 기준까지 포함하는 중심 패킷입니다. 최근 readability refresh로 summary·handoff·packet 문서 첫 화면에서 `이 phase가 새 보상 시스템이 아니라 경계 장면 추가`라는 점과 역할별 읽기 순서를 더 빨리 파악할 수 있게 정리했습니다.
+          </p>
+          <p class="subhead">읽기용 빠른 보기</p>
+          <div class="link-list">
+            <a class="link-chip" href="./dicespell_overrun_event_summary_kr.md">요약 페이지</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_patch_map_summary_kr.md">런타임 패치 맵 요약</a>
+          </div>
+          <p class="subhead">원본 전달 문서</p>
+          <div class="link-list">
+            <a class="link-chip" href="./dicespell_overrun_event_handoff_kr.md">핸드오프</a>
+            <a class="link-chip" href="./dicespell_overrun_event_screen_packet_kr.md">스크린 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_event_acceptance_matrix_kr.md">Acceptance Matrix</a>
+            <a class="link-chip" href="./dicespell_overrun_event_implementation_packet_kr.md">구현 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_event_integration_workorder_kr.md">통합 작업지시</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="eyebrow">Production / Validation</p>
+          <h3>오버런 제작 보조 문서</h3>
+          <p>
+            production cutsheet, smoke migration packet, source-of-truth map, content deck에 더해 `entrypoint matrix`, `first runtime slice`, `first runtime state matrix`, `first runtime review packet`, `first runtime delivery packet`, `second runtime slice`, `second runtime review packet`, `runtime commit stack`, `runtime handoff scorecard`, `runtime fixture ledger`, `runtime owner workboard`, `cutover gate packet`, cross-track `owner handoff packet`, `execution reporting packet`, `gap ledger`, 그리고 이번의 `cutover readiness board`까지 포함해 실제 제작·검수·확장에서 `누가 어떤 문서부터 열어야 하는가`, `첫 실제 코드 턴은 어디서 멈춰야 하는가`, `그 직후 state는 정확히 무엇을 하고 무엇을 아직 하지 않아야 하는가`, `리뷰어는 어떤 evidence bundle을 보고 pass/fail을 말해야 하는가`, `이걸 실제 첫 handoff 묶음으로는 어떻게 넘길 것인가`, `마지막 closing commit은 어디까지를 같이 닫아야 하는가`, `Commit 2는 어떤 리뷰 체크리스트가 있어야 runtime-ready라고 말할 수 있는가`, `이 둘을 실제 2커밋 스택으로는 어떻게 읽고 기록해야 하는가`, `그래서 이번 턴엔 어떤 체크를 닫고 어떤 문장을 tracker/run log에 그대로 남길 것인가`, `S1~S12 픽스처는 어느 커밋과 어느 오너 제출물에 속하는가`, `실제 사람 handoff로는 누가 무엇을 제출하면 되는가`, `정확히 언제 시작하고 언제 멈추며 누가 다음 단계를 열어 주는가`, `최종적으로 tracker / run log / public portal / git에는 어떤 단계명을 어떻게 남겨야 half-cutover가 완료처럼 안 보이는가`, `그래서 지금 실제로 아직 안 끝난 구현 갭이 무엇인가`, `Commit 2 closing은 실제 어느 line anchor에서 어떻게 절개해야 하는가`, `line number가 조금 밀려도 Commit 1/2에서 어디를 같은 책임으로 다시 찾아야 하는가`, `지금 누가 시작 가능하고 누가 아직 대기인가`, `그 제출물을 실제로 어떤 stage archive에 보관해야 다음 review와 다음 자동화가 같은 경로를 열지`, 그리고 이번의 `signoff ladder`까지 포함해 `좋아, evidence는 모였는데 정확히 누가 green을 선언하고 누가 다음 단계를 열지?`를 단계별 승인 사다리로 바로 찾게 만든 묶음입니다.
+          </p>
+          <div class="link-list">
+            <a class="link-chip" href="./dicespell_overrun_event_production_cutsheet_kr.md">Production Cutsheet</a>
+            <a class="link-chip" href="./dicespell_overrun_event_smoke_migration_packet_kr.md">Smoke Migration</a>
+            <a class="link-chip" href="./dicespell_overrun_event_source_of_truth_map_kr.md">Source of Truth Map</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_patch_map_kr.md">런타임 패치 맵</a>
+            <a class="link-chip" href="./dicespell_overrun_first_runtime_slice_packet_kr.md">첫 런타임 슬라이스 Packet</a>
+            <a class="link-chip" href="./dicespell_overrun_first_runtime_slice_summary_kr.md">첫 런타임 슬라이스 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_first_runtime_state_matrix_kr.md">첫 런타임 상태 전이 매트릭스</a>
+            <a class="link-chip" href="./dicespell_overrun_first_runtime_state_matrix_summary_kr.md">상태 전이 매트릭스 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_first_runtime_review_packet_kr.md">첫 런타임 리뷰 Packet</a>
+            <a class="link-chip" href="./dicespell_overrun_first_runtime_review_summary_kr.md">첫 런타임 리뷰 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_first_runtime_delivery_packet_kr.md">첫 런타임 전달 Packet</a>
+            <a class="link-chip" href="./dicespell_overrun_first_runtime_delivery_summary_kr.md">첫 런타임 전달 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_second_runtime_slice_packet_kr.md">두 번째 런타임 슬라이스 Packet</a>
+            <a class="link-chip" href="./dicespell_overrun_second_runtime_slice_summary_kr.md">두 번째 런타임 슬라이스 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_second_runtime_review_packet_kr.md">두 번째 런타임 리뷰 Packet</a>
+            <a class="link-chip" href="./dicespell_overrun_second_runtime_review_summary_kr.md">두 번째 런타임 리뷰 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_commit_stack_packet_kr.md">런타임 커밋 스택 Packet</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_commit_stack_summary_kr.md">런타임 커밋 스택 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_handoff_scorecard_kr.md">런타임 핸드오프 스코어카드</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_handoff_scorecard_summary_kr.md">핸드오프 스코어카드 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_fixture_ledger_kr.md">런타임 픽스처 레저</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_fixture_ledger_summary_kr.md">픽스처 레저 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_cutover_gate_packet_kr.md">컷오버 게이트 Packet</a>
+            <a class="link-chip" href="./dicespell_overrun_cutover_gate_summary_kr.md">컷오버 게이트 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_owner_workboard_kr.md">런타임 오너 워크보드</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_owner_workboard_summary_kr.md">오너 워크보드 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_event_content_deck_kr.md">Content Deck</a>
+            <a class="link-chip" href="./dicespell_overrun_cutover_runway_packet_kr.md">Cutover Runway Packet</a>
+            <a class="link-chip" href="./dicespell_overrun_cutover_runway_summary_kr.md">Cutover Runway Summary</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_entrypoint_matrix_kr.md">진입점 매트릭스</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_owner_handoff_packet_kr.md">오너 핸드오프 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_execution_reporting_packet_kr.md">실행 기록 계약 Packet</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_gap_ledger_kr.md">구현 갭 레저</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_cutover_readiness_board_kr.md">컷오버 준비 보드</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_signoff_ladder_kr.md">사인오프 래더</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_document_stack_packet_kr.md">문서 스택 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_document_stack_summary_kr.md">문서 스택 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_entrypoint_matrix_summary_kr.md">진입점 매트릭스 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_owner_handoff_summary_kr.md">오너 핸드오프 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_execution_reporting_summary_kr.md">실행 기록 계약 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_gap_ledger_summary_kr.md">구현 갭 레저 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_cutover_readiness_summary_kr.md">컷오버 준비 보드 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_signoff_ladder_summary_kr.md">사인오프 래더 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_commit2_closing_surgery_sheet_kr.md">Commit 2 수술 시트</a>
+            <a class="link-chip" href="./dicespell_overrun_commit2_closing_surgery_summary_kr.md">Commit 2 수술 시트 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_semantic_anchor_packet_kr.md">런타임 시맨틱 앵커 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_semantic_anchor_summary_kr.md">런타임 시맨틱 앵커 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_rehearsal_packet_kr.md">런타임 리허설 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_rehearsal_summary_kr.md">런타임 리허설 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_artifact_archive_packet_kr.md">아카이브 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_artifact_archive_summary_kr.md">아카이브 패킷 요약</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-shell" id="maps">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Maps / Reference</p>
+          <h2>리버스 / 코드맵 / 기준 보조 문서</h2>
+          <p>기준 기획과 실제 구현 사이 간극을 메우는 해석용 보조 문서군입니다. 구현자/기획자 모두에게 맥락을 제공하는 역할을 합니다.</p>
+        </div>
+        <span class="section-tag">Reference Layer</span>
+      </div>
+      <div class="section-grid">
+        <article class="card">
+          <p class="eyebrow">Reference Docs</p>
+          <h3>구조 해석 문서</h3>
+          <div class="link-list">
+            <a class="link-chip" href="./dicespell_standalone_blueprint_kr.md">스탠드얼론 청사진</a>
+            <a class="link-chip" href="./dicespell_current_build_reverse_spec_kr.md">현재 빌드 역기획서</a>
+            <a class="link-chip" href="./dicespell_current_build_code_map_kr.md">현재 빌드 코드 맵</a>
+            <a class="link-chip" href="./dicespell_reverse_design_kr.md">리버스 디자인</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_gap_ledger_kr.md">구현 갭 레저</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_cutover_readiness_board_kr.md">컷오버 준비 보드</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_signoff_ladder_kr.md">사인오프 래더</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_document_stack_packet_kr.md">문서 스택 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_document_stack_summary_kr.md">문서 스택 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_commit1_floor_surgery_sheet_kr.md">Commit 1 수술 시트</a>
+            <a class="link-chip" href="./dicespell_overrun_commit2_closing_surgery_sheet_kr.md">Commit 2 수술 시트</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_visual_asset_packet_kr.md">비주얼 자산 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_visual_asset_summary_kr.md">비주얼 자산 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_semantic_anchor_packet_kr.md">런타임 시맨틱 앵커 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_semantic_anchor_summary_kr.md">런타임 시맨틱 앵커 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_rehearsal_packet_kr.md">런타임 리허설 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_runtime_rehearsal_summary_kr.md">런타임 리허설 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_artifact_archive_packet_kr.md">아카이브 패킷</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_artifact_archive_summary_kr.md">아카이브 패킷 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_cutover_readiness_summary_kr.md">컷오버 준비 보드 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_onboarding_signoff_ladder_summary_kr.md">사인오프 래더 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_commit1_floor_surgery_summary_kr.md">Commit 1 수술 시트 요약</a>
+            <a class="link-chip" href="./dicespell_overrun_commit2_closing_surgery_summary_kr.md">Commit 2 수술 시트 요약</a>
+            <a class="link-chip" href="./dicespell_upgrade_stone_build_spec_kr.html">강화석 상세 기획서</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="eyebrow">Operational Snapshot</p>
+          <h3>현재 포털 구성 상태</h3>
+          <p>아래처럼 이 포털은 기준 기획 → 실행 추적 → 역할별 전달 패킷 → 보조 레퍼런스 레이어 순서로 읽는 구조를 권장합니다.</p>
+          <div class="status-grid">
+            <div class="status-box"><span>Step 1</span><strong>기준 기획서</strong></div>
+            <div class="status-box"><span>Step 2</span><strong>개발 추적 문서</strong></div>
+            <div class="status-box"><span>Step 3</span><strong>온보딩 / 오버런 패킷</strong></div>
+            <div class="status-box"><span>Step 4</span><strong>리버스 / 코드맵 보강</strong></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-shell" id="theme">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Theme / Supplemental</p>
+          <h2>테마 / 부가 문서</h2>
+          <p>개별 테마, 적 구성, 스킬 배정 같은 보조 설계 문서를 모아두는 구역입니다. 기준 문서와 실행 문서를 읽은 뒤 필요한 경우 확장 참조용으로 보는 문서들입니다.</p>
+        </div>
+        <span class="section-tag">Supplemental</span>
+      </div>
+      <div class="section-grid">
+        <article class="card">
+          <p class="eyebrow">Theme Docs</p>
+          <h3>테마 / 스킬 배정 문서</h3>
+          <div class="link-list">
+            <a class="link-chip" href="./goblin-theme-monsters.html">고블린 테마 몬스터</a>
+            <a class="link-chip" href="./goblin_theme_skill_assignment_kr.md">고블린 테마 스킬 배정</a>
+            <a class="link-chip" href="./goblin_theme_skill_assignment_unity_kr.md">고블린 테마 스킬 배정(Unity)</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="eyebrow">Redesign / Prototype</p>
+          <h3>Run Table UI 리디자인 문서</h3>
+          <p>현재 시범 적용된 `Run Table` UI 패스를 콘셉트 메모가 아니라 실제 제작 handoff 문서로 묶은 세트입니다. `Choose Your Tome`, `Run Atlas`, `Battle Table`, `Run Curation`, `Overrun Oath` 5개 surface family에 더해, `route node / stakes plaque / oath banner` 토큰과 DOM/QA anchor를 먼저 잠그는 packet, 그 토큰을 실제 owner delivery 순서와 evidence 묶음까지 좁히는 workboard, `무엇이 제출되면 닫혔다고 말할 수 있는가`를 잠그는 closing packet, 그 closing을 실제 어떤 stage archive / 파일명 / owner 제출물로 남길지까지 고정하는 evidence manifest packet, `지금 코드 baseline / 다음 target packet / readable summary / 실제 evidence archive`를 질문별로 어느 문서에서 읽어야 하는지 정리한 source-of-truth map, 그리고 마지막으로 `무엇이 이미 handoff-ready이고 무엇이 아직 markup/CSS/review/archive evidence에서 안 닫혔는지`를 다시 surface별로 보여 주는 gap ledger, `atlas-route-node -> battle-stakes-plaque -> oath-banner` 순서와 `bootstrap-ready -> archive-ready candidate -> stage green` ownership을 실제 refinement 큐로 잠그는 queue packet, 그 큐의 첫 실제 턴인 atlas를 `route node hook + threshold 읽힘 + starter asset sanity + atlas archive-ready candidate`까지만 좁히는 first-stage packet, 그리고 마지막으로 candidate와 green을 같은 초록불로 쓰지 않도록 `artifact alignment review -> first-glance verdict -> starter sanity verdict -> candidate line -> green/unlock line` 순서를 고정하는 atlas candidate review packet, atlas green 뒤 다음 실제 턴을 `current / next / grimoire slot hook + stakes first-glance + Stakes Plaque Starter sanity + battle archive-ready candidate`까지만 좁히는 battle first-stage packet, 마지막 턴을 `banner / result / carry role hook + banner-first hierarchy + Oath Banner Starter sanity + oath archive-ready candidate`까지만 좁히는 oath final-stage packet, 이어 마지막 stage에서도 정확히 어떤 artifact 8종과 어떤 review 순서로 `candidate -> green -> queue closing review-only unlock`을 말하는지 잠그는 oath required artifacts / candidate review packet, 그리고 live kickoff와 archive bootstrap 뒤에도 남아 있던 마지막 text-first 공백인 `hook-manifest / dom-sanity / density-review / starter-asset-list / handoff-line 첫 줄`을 stage-specific honest stub로 잠그는 token artifact stub packet과 starter stub kit, 그리고 `status / owner summary / boundary / next allowed step / handoff line`을 같은 stage 언어로 채우게 만드는 manifest fill packet + exemplar bundle, 이어 실제 첫 atlas turn에서 프로그래머/UI/아트/QA/PM이 어떤 순서로 제출하고 어디서 candidate와 green을 나누는지까지 잠그는 atlas handoff scorecard, 그리고 그 다음 마지막 wording 공백인 `artifact 8종을 실제로 어느 문장 밀도까지 채워야 honest candidate인가`를 atlas first-stage filled exemplar 8종과 함께 잠그는 atlas filled archive examples packet, 이번에는 여기서 한 단계 더 내려가 `좋아, 그러면 atlas live archive를 실제로 열면 template / stub / example / source packet을 각각 어떤 실제 파일 경로로 옮기고, 누가 언제 어떤 파일을 채워야 하지?`를 source docs -> starter files -> live archive destinations -> owner fill order 4층으로 다시 잠그는 atlas archive file map packet, battle 첫 live turn에서도 같은 공백이 다시 생기지 않게 `manifest / hook-manifest / dom-sanity / overview caption / stakes-focus caption / density-review / starter-asset-list / handoff-line`을 실제 archive wording 밀도까지 채운 battle filled archive examples packet과 exemplar bundle, 마지막 운영 문장을 `oath-banner green`과 섞지 않도록 `queue-closing review-ready -> Run Table token queue closing -> follow-up reopen` wording을 잠그는 queue closing packet까지 source packet + readable summary + prototype board로 함께 볼 수 있습니다, 마지막으로 `문서가 충분하다`와 `지금 실제로 열어도 된다`를 같은 뜻으로 쓰지 않도록 `atlas only live-ready`, `battle/oath locked`, `queue closing review-only`를 역할별 시작/대기/제출/기록 보드로 잠그는 readiness board까지 source packet + readable summary + prototype board로 함께 볼 수 있습니다.</p>
+          <div class="link-list">
+            <a class="link-chip" href="./dicespell_game_flow_surface_handoff_packet_kr.md">Run Table handoff packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_surface_handoff_summary_kr.md">Run Table 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_anchor_packet_kr.md">Token & QA anchor packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_anchor_summary_kr.md">Token & QA anchor 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_delivery_workboard_kr.md">Token delivery workboard</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_delivery_workboard_summary_kr.md">Token delivery 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_closing_packet_kr.md">Token closing packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_closing_summary_kr.md">Token closing 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_evidence_manifest_kr.md">Token evidence manifest packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_evidence_manifest_summary_kr.md">Token evidence manifest 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_source_of_truth_map_kr.md">Token source-of-truth map</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_source_of_truth_map_summary_kr.md">Token source-of-truth 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_gap_ledger_kr.md">Token gap ledger</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_gap_ledger_summary_kr.md">Token gap ledger 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_archive_bootstrap_packet_kr.md">Token archive bootstrap</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_archive_bootstrap_summary_kr.md">Token archive bootstrap 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_refinement_queue_packet_kr.md">Token refinement queue</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_refinement_queue_summary_kr.md">Token refinement queue 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_atlas_route_node_stage_packet_kr.md">Atlas route node stage packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_atlas_live_kickoff_packet_kr.md">Atlas live kickoff packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_artifact_stub_packet_kr.md">Token artifact stub packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_atlas_route_node_stage_summary_kr.md">Atlas route node stage 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_atlas_live_kickoff_summary_kr.md">Atlas live kickoff 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_artifact_stub_summary_kr.md">Token artifact stub 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_manifest_fill_packet_kr.md">Token manifest fill packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_manifest_fill_summary_kr.md">Token manifest fill 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_atlas_handoff_scorecard_kr.md">Atlas handoff scorecard</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_atlas_handoff_scorecard_summary_kr.md">Atlas handoff scorecard 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_atlas_filled_archive_examples_kr.md">Atlas filled archive examples</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_atlas_archive_file_map_packet_kr.md">Atlas archive file map packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_atlas_semantic_anchor_packet_kr.md">Atlas semantic anchor packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_atlas_filled_archive_examples_summary_kr.md">Atlas filled archive examples 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_atlas_archive_file_map_summary_kr.md">Atlas archive file map 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_atlas_semantic_anchor_summary_kr.md">Atlas semantic anchor 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_atlas_required_artifacts_packet_kr.md">Atlas required artifacts packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_atlas_required_artifacts_summary_kr.md">Atlas required artifacts 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_atlas_candidate_review_packet_kr.md">Atlas candidate review packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_atlas_candidate_review_summary_kr.md">Atlas candidate review 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_battle_stakes_stage_packet_kr.md">Battle first-stage packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_battle_stakes_stage_summary_kr.md">Battle first-stage 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_battle_required_artifacts_packet_kr.md">Battle required artifacts packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_battle_required_artifacts_summary_kr.md">Battle required artifacts 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_battle_candidate_review_packet_kr.md">Battle candidate review packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_battle_candidate_review_summary_kr.md">Battle candidate review 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_battle_filled_archive_examples_kr.md">Battle filled archive examples</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_battle_filled_archive_examples_summary_kr.md">Battle filled archive examples 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_battle_handoff_scorecard_kr.md">Battle handoff scorecard</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_battle_handoff_scorecard_summary_kr.md">Battle handoff scorecard 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_banner_stage_packet_kr.md">Oath final-stage packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_banner_stage_summary_kr.md">Oath final-stage 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_live_kickoff_packet_kr.md">Oath live kickoff packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_live_kickoff_summary_kr.md">Oath live kickoff 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_semantic_anchor_packet_kr.md">Oath semantic anchor packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_semantic_anchor_summary_kr.md">Oath semantic anchor 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_archive_file_map_packet_kr.md">Oath archive file map packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_archive_file_map_summary_kr.md">Oath archive file map 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_document_stack_packet_kr.md">Oath document stack packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_document_stack_summary_kr.md">Oath document stack 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_filled_archive_examples_kr.md">Oath filled archive examples packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_filled_archive_examples_summary_kr.md">Oath filled archive examples 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_handoff_scorecard_kr.md">Oath handoff scorecard packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_handoff_scorecard_summary_kr.md">Oath handoff scorecard 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_required_artifacts_packet_kr.md">Oath required artifacts packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_required_artifacts_summary_kr.md">Oath required artifacts 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_candidate_review_packet_kr.md">Oath candidate review packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_oath_candidate_review_summary_kr.md">Oath candidate review 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_queue_closing_packet_kr.md">Queue closing packet</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_queue_closing_summary_kr.md">Queue closing 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_queue_readiness_board_kr.md">Queue readiness board</a>
+            <a class="link-chip" href="./dicespell_game_flow_token_queue_readiness_summary_kr.md">Queue readiness 요약</a>
+            <a class="link-chip" href="./dicespell_game_flow_redesign_packet_kr.md">리디자인 방향 패킷</a>
+            <a class="link-chip" href="./prototypes/dicespell_game_flow_redesign_board.html">프로토타입 보드</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="eyebrow">Portal Notes</p>
+          <h3>이 포털의 의도</h3>
+          <p>
+            이 포털은 저장소의 HTML/Markdown 문서 전체 세트를 함께 공개합니다. 내용이 바뀌면 동일 경로를 다시 배포해 최신 상태로 갱신합니다.
+            공개 저장소와 실제 작업 저장소를 분리해 운영하므로, 포털에 보이는 문서는 publish 스크립트 기준으로 반영됩니다.
+          </p>
+          <div class="button-row">
+            <a class="button secondary" href="https://github.com/hyoseung22/dicespell-docs">공개 포털 저장소</a>
+            <a class="button secondary" href="https://github.com/hyoseung22/dicespell-standalone">작업 저장소</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <p class="footer">
+      권장 읽기 순서: <strong>기준 기획서 → 개발 추적 문서 → 온보딩/오버런 전달 패킷 → 리버스/코드맵 보조 문서</strong>
+    </p>
+    <p class="footer">
+      공개 저장소: <a href="https://github.com/hyoseung22/dicespell-docs" style="color: var(--gold);">hyoseung22/dicespell-docs</a> · 작업 저장소: <a href="https://github.com/hyoseung22/dicespell-standalone" style="color: var(--gold);">hyoseung22/dicespell-standalone</a>
+    </p>
+  </main>
+</body>
+</html>

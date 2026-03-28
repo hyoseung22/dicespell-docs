@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dice Spell - 종합 게임 기획서 v2.0</title>
+<style>
+  :root {
+    --bg: #1a1410;
+    --card: #2a2218;
+    --card-alt: #332a1e;
+    --border: #5a4a32;
+    --gold: #d4a854;
+    --gold-dim: #a88638;
+    --text: #e8dcc8;
+    --text-dim: #a89878;
+    --accent-fire: #e85535;
+    --accent-ice: #55a8e8;
+    --accent-elec: #e8d555;
+    --accent-earth: #6eb855;
+    --accent-purple: #a855e8;
+    --heading-font: 'Segoe UI', 'Malgun Gothic', sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Malgun Gothic', 'Segoe UI', sans-serif;
+    font-size: 15px; line-height: 1.7;
+  }
+  nav {
+    position: fixed; top:0; left:0; width: 280px; height:100vh;
+    background: var(--card); border-right: 2px solid var(--border);
+    overflow-y: auto; padding: 20px 16px; z-index: 100;
+  }
+  nav h2 { color: var(--gold); font-size: 16px; margin-bottom: 12px; letter-spacing: 1px; }
+  nav ul { list-style: none; }
+  nav ul li { margin-bottom: 2px; }
+  nav ul li a {
+    color: var(--text-dim); text-decoration: none; font-size: 13px;
+    display: block; padding: 4px 8px; border-radius: 4px; transition: all .2s;
+  }
+  nav ul li a:hover { color: var(--gold); background: rgba(212,168,84,.1); }
+  nav ul li.section > a { color: var(--gold-dim); font-weight: bold; font-size: 14px; margin-top: 10px; }
+  nav::-webkit-scrollbar { width: 4px; }
+  nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  main { margin-left: 280px; max-width: 1020px; padding: 40px 48px 80px; }
+  h1 { font-size: 36px; color: var(--gold); border-bottom: 3px solid var(--gold); padding-bottom: 12px; margin-bottom: 32px; font-family: var(--heading-font); }
+  h2 { font-size: 26px; color: var(--gold); margin: 48px 0 20px; padding-bottom: 8px; border-bottom: 2px solid var(--border); font-family: var(--heading-font); }
+  h3 { font-size: 20px; color: var(--gold-dim); margin: 32px 0 12px; font-family: var(--heading-font); }
+  h4 { font-size: 16px; color: var(--text); margin: 20px 0 8px; font-family: var(--heading-font); }
+  h5 { font-size: 14px; color: var(--gold-dim); margin: 14px 0 6px; }
+  p { margin-bottom: 12px; }
+  ul, ol { margin: 8px 0 16px 24px; }
+  li { margin-bottom: 4px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin: 16px 0; }
+  .card-alt { background: var(--card-alt); }
+  .card h4 { margin-top: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+  th { background: var(--card-alt); color: var(--gold); text-align: left; padding: 8px 10px; border: 1px solid var(--border); font-weight: 600; }
+  td { padding: 6px 10px; border: 1px solid var(--border); vertical-align: top; }
+  .table-tight th, .table-tight td { padding: 6px 8px; }
+  tr:nth-child(even) td { background: rgba(42,34,24,.5); }
+  tr:hover td { background: rgba(212,168,84,.05); }
+  .spec-table td:first-child,
+  .doc-role-table td:first-child { width: 180px; color: var(--gold); font-weight: 600; }
+  .tag { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; margin: 2px 4px 2px 0; }
+  .tag-fire { background: var(--accent-fire); color: #fff; }
+  .tag-ice { background: var(--accent-ice); color: #fff; }
+  .tag-elec { background: var(--accent-elec); color: #1a1410; }
+  .tag-earth { background: var(--accent-earth); color: #fff; }
+  .tag-none { background: #888; color: #fff; }
+  .tag-common { background: #888; color: #fff; }
+  .tag-rare { background: #4488cc; color: #fff; }
+  .tag-epic { background: #9944cc; color: #fff; }
+  .tag-hero { background: #cc6644; color: #fff; }
+  .tag-legend { background: #cc8822; color: #fff; }
+  .tag-transcendent { background: #cc2244; color: #fff; }
+  .formula { background: #1e1a14; border: 1px solid var(--border); border-left: 4px solid var(--gold); padding: 14px 18px; margin: 12px 0; font-family: 'Consolas', 'Courier New', monospace; font-size: 13px; color: var(--accent-elec); border-radius: 4px; overflow-x: auto; white-space: pre-wrap; }
+  .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 16px 0; padding: 16px; background: var(--card); border-radius: 8px; }
+  .flow-step { background: var(--card-alt); border: 1px solid var(--border); border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--gold); white-space: nowrap; }
+  .flow-arrow { color: var(--gold-dim); font-size: 18px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+  .highlight { color: var(--gold); font-weight: 600; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .summary-box { background: linear-gradient(135deg, var(--card) 0%, var(--card-alt) 100%); border: 2px solid var(--gold); border-radius: 12px; padding: 24px 28px; margin: 24px 0; }
+  .summary-box h3 { color: var(--gold); margin-top: 0; }
+  .note { background: rgba(168,134,56,.1); border-left: 3px solid var(--gold-dim); padding: 10px 16px; margin: 12px 0; font-size: 13px; color: var(--text-dim); border-radius: 0 4px 4px 0; }
+  .muted { color: var(--text-dim); font-size: 13px; }
+  .badge-build { display:inline-block; background: var(--accent-purple); color:#fff; font-size:10px; padding:1px 6px; border-radius:8px; vertical-align:middle; margin-left:4px; }
+  .badge-plan { display:inline-block; background: var(--gold-dim); color:#1a1410; font-size:10px; padding:1px 6px; border-radius:8px; vertical-align:middle; margin-left:4px; }
+  details { margin: 8px 0; }
+  details summary { cursor: pointer; color: var(--gold); font-weight: 600; padding: 6px 0; }
+  details summary:hover { color: var(--accent-elec); }
+  @media (max-width: 900px) {
+    nav { display: none; }
+    main { margin-left: 0; padding: 20px; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== NAVIGATION ==================== -->
+<nav>
+  <h2>DICE SPELL GDD v2</h2>
+  <ul>
+    <li class="section"><a href="#s1">1. 게임 개요</a></li>
+    <li class="section"><a href="#s2">2. 아웃게임</a></li>
+    <li><a href="#s2-library">&nbsp;&nbsp;2.1 도서관</a></li>
+    <li><a href="#s2-grimoire">&nbsp;&nbsp;2.2 마도서 (18권)</a></li>
+    <li><a href="#s2-save">&nbsp;&nbsp;2.3 세이브/설정</a></li>
+    <li class="section"><a href="#s3">3. 인게임 전투</a></li>
+    <li><a href="#s3-flow">&nbsp;&nbsp;3.1 전투 흐름</a></li>
+    <li><a href="#s3-dice">&nbsp;&nbsp;3.2 주사위</a></li>
+    <li><a href="#s3-hand">&nbsp;&nbsp;3.3 족보(13종)</a></li>
+    <li><a href="#s3-damage">&nbsp;&nbsp;3.4 피해 공식</a></li>
+    <li><a href="#s3-upper">&nbsp;&nbsp;3.5 상단 합계 보너스</a></li>
+    <li><a href="#s3-player">&nbsp;&nbsp;3.6 플레이어</a></li>
+    <li class="section"><a href="#s4">4. 몬스터</a></li>
+    <li><a href="#s4-slime">&nbsp;&nbsp;4.1 슬라임 테마</a></li>
+    <li><a href="#s4-goblin">&nbsp;&nbsp;4.2 고블린 테마</a></li>
+    <li><a href="#s4-lich">&nbsp;&nbsp;4.3 리치 테마</a></li>
+    <li><a href="#s4-ai">&nbsp;&nbsp;4.4 몬스터 AI</a></li>
+    <li><a href="#s4-plan">&nbsp;&nbsp;4.5 원안 추가 몬스터</a></li>
+    <li class="section"><a href="#s5">5. 붕괴 시스템</a></li>
+    <li class="section"><a href="#s6">6. 속성 시스템</a></li>
+    <li class="section"><a href="#s7">7. 유물 (61종)</a></li>
+    <li><a href="#s7-dice-art">&nbsp;&nbsp;7.1 주사위 조작</a></li>
+    <li><a href="#s7-hand-art">&nbsp;&nbsp;7.2 족보 강화</a></li>
+    <li><a href="#s7-collapse-art">&nbsp;&nbsp;7.3 붕괴 관련</a></li>
+    <li><a href="#s7-stat-art">&nbsp;&nbsp;7.4 스탯/원소</a></li>
+    <li><a href="#s7-status-art">&nbsp;&nbsp;7.5 상태이상</a></li>
+    <li><a href="#s7-utility-art">&nbsp;&nbsp;7.6 유틸리티</a></li>
+    <li class="section"><a href="#s8">8. 상점 &amp; 보상</a></li>
+    <li class="section"><a href="#s9">9. 스테이지 구조</a></li>
+    <li class="section"><a href="#s10">10. 상태이상</a></li>
+    <li class="section"><a href="#s11">11. UI/UX &amp; 연출</a></li>
+    <li class="section"><a href="#s12">12. 사운드</a></li>
+    <li class="section"><a href="#s13">13. 데이터 테이블</a></li>
+    <li class="section"><a href="#s14">14. 원안 vs 현재빌드</a></li>
+    <li class="section"><a href="#s15">15. 리스크 &amp; 과제</a></li>
+  </ul>
+</nav>
+
+<!-- ==================== MAIN ==================== -->
+<main>
+
+<h1 id="s1">Dice Spell &mdash; 종합 게임 기획서</h1>
+<p style="color:var(--text-dim); font-size:13px;">
+  버전 2.0 &nbsp;|&nbsp; 최종 갱신: 2026-03-18 17:41 &nbsp;|&nbsp;
+  기반: Confluence 원안 + Standalone 소스코드(data.js / game-engine.js) 역기획<br>
+  <span class="badge-build">현재빌드</span> = 소스코드 실데이터 &nbsp;&nbsp;
+  <span class="badge-plan">원안</span> = Confluence 기획서 사양
+</p>
+<div class="summary-box">
+  <h3>문서 사용법</h3>
+  <p>이 문서는 <strong>현재 빌드 기준의 단일 사양 출처</strong>다. 즉 현재 플레이 가능한 규칙, 수치 구조, 시스템 범위를 우선 설명하고, 원안과의 차이는 각 섹션 안에서 함께 비교한다.</p>
+  <div class="grid-2">
+    <div class="card card-alt">
+      <h4>이 문서가 답하는 것</h4>
+      <table class="doc-role-table table-tight">
+        <tr><th>질문</th><th>답변 범위</th></tr>
+        <tr><td>지금 게임이 무엇인가</td><td>현재 빌드 핵심 루프, 자원, 전투 규칙, 콘텐츠 범위</td></tr>
+        <tr><td>원안과 무엇이 다른가</td><td>각 섹션의 <span class="badge-plan">원안</span> / <span class="badge-build">현재빌드</span> 비교</td></tr>
+        <tr><td>현재 수치 기준은 무엇인가</td><td>소스코드와 검증 결과를 반영한 현재 사양</td></tr>
+      </table>
+    </div>
+    <div class="card card-alt">
+      <h4>함께 보는 문서</h4>
+      <table class="doc-role-table table-tight">
+        <tr><th>문서</th><th>역할</th></tr>
+        <tr><td>개발 추적 기획서</td><td>현재 우선순위, 결정, 리스크, 요약형 변경 이력</td></tr>
+        <tr><td>자동화 실행 로그</td><td>개별 실행 단위의 검증, 배포, git 상세 기록</td></tr>
+        <tr><td>공개 포털</td><td><a href="https://hyoseung22.github.io/dicespell-docs/">https://hyoseung22.github.io/dicespell-docs/</a></td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+<details class="card">
+  <summary>운영 부록 / 문서 동기화 규칙</summary>
+  <div class="note">작업 절차 규칙: DiceSpell의 모든 구현 작업은 <strong>개발 추적 기획서</strong>와 <strong>이 종합 게임 기획서</strong>를 먼저 갱신한 뒤 진행한다. 문서에서 범위를 먼저 확정하고, 구현 후에는 다시 현재빌드 기준으로 동기화한다.</div>
+  <div class="note">문서 공개 계획: 종합 게임 기획서와 개발 추적 기획서는 공개 문서 전용 저장소의 정적 웹 포털로도 배포한다. 브라우저 주소창 입력만으로 접근 가능하게 유지하되, 게임 소스와 실험 브랜치는 비공개로 관리한다.</div>
+  <div class="note">공개 문서 주소: <a href="https://hyoseung22.github.io/dicespell-docs/">포털</a> / <a href="https://hyoseung22.github.io/dicespell-docs/gdd.html">종합 게임 기획서</a> / <a href="https://hyoseung22.github.io/dicespell-docs/development-tracker.html">개발 추적 기획서</a> / 공개 저장소: <a href="https://github.com/hyoseung22/dicespell-docs">hyoseung22/dicespell-docs</a></div>
+  <div class="note">운영 규칙: DiceSpell 작업으로 문서가 갱신되면 같은 사이클에서 공개 포털 HTML도 재동기화하고 `scripts/publish_docs_portal.sh`로 재배포해 외부 링크를 최신 상태로 유지한다.</div>
+  <div class="note">자동화 규칙: 반복 구현 writer는 `OpenClaw DiceSpell execution loop 30m` 하나만 사용하고, 검증을 통과한 변경분만 같은 사이클에서 커밋/푸시한다. 검증 실패, 원격 푸시 실패, 기존 변경 충돌 시에는 강행하지 않고 실행 로그에 원인을 남긴다.</div>
+  <div class="note">버전 관리 원칙: Codex는 DiceSpell의 기능 구현자이면서 저장소 버전 관리자 역할도 겸한다. 새 요청은 구현 전에 자동화 충돌, 문서 동기화, 검증 재현성, 커밋 단위, 공개 포털 반영, 원격 저장소 안전성에 미치는 영향을 먼저 판단한다.</div>
+  <div class="note">현재 개발 우선순위: 다음 단계는 `콘텐츠 완성도 + 시스템 유기성 + 재미(FQA)`를 먼저 보고, UX는 그다음, 밸런스는 `최소 플레이 가능 허들과 회귀 방지` 역할로만 운용한다. 즉 지금은 수치 평준화보다 `왜 한 런을 더 하고 싶은가`를 더 중요하게 본다.</div>
+  <div class="note">작업 선택 기준: 새 작업은 먼저 `이전 선택 -> 현재 보상 -> 다음 기대`를 더 강하게 만드는지, 플레이 감정선과 기억점을 늘리는지, 같은 슬롯에서 필요한 UX 피드백을 최소 보강할 수 있는지 확인한다. 이 기준을 만족하지 못하는 순수 수치 조정은 blocker가 아닌 이상 후순위다.</div>
+  <div class="note">현재 슬롯 메모: 핵심 문서 세트의 readability refresh를 진행해, 첫 런 온보딩 packet과 `overrunEvent` packet이 포털/노션 첫 화면에서도 `왜 존재하는가`, `누가 어디부터 읽어야 하는가`, `바로 이어서 어떤 문서로 내려가야 하는가`를 즉시 파악할 수 있게 정리한다. 문서 역할과 source-of-truth 내용은 유지하되, 첫 스크린 가독성과 handoff 속도를 높이는 데 집중한다.</div>
+  <div class="note">검증 규칙: 밸런스 시뮬레이터는 `--grimoires=...` 다중 마도서 입력을 받아 같은 HP/사용군/숙련도 축에서 여러 책을 한 배치로 비교할 수 있어야 하며, 필요할 때는 `--starter-artifacts=` / `--page-count=` override로 시작 유물·페이지 수 가설도 같은 도구 안에서 바로 검증할 수 있어야 한다.</div>
+</details>
+
+<!-- ====== 1 ====== -->
+<h2>1. 게임 개요</h2>
+<div class="summary-box">
+  <h3>한 줄 요약</h3>
+  <p><strong>야추(Yahtzee) 주사위 족보</strong>를 주문으로 변환하여 봉인서 속 몬스터와 싸우는 <strong>로그라이크 턴제 전략 RPG</strong>.</p>
+</div>
+<div class="grid-2">
+  <div class="card">
+    <h4>기본 정보</h4>
+    <table>
+      <tr><td>장르</td><td>로그라이크 턴제 전략 RPG</td></tr>
+      <tr><td>플랫폼</td><td>PC (Windows) &mdash; Electron</td></tr>
+      <tr><td>엔진</td><td>HTML/CSS/JS (순수 웹)</td></tr>
+      <tr><td>아트 스타일</td><td>픽셀 아트, 브라운 톤</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>세계관</h4>
+    <p>중세 판타지 도서관. 플레이어 = <strong>사서</strong>이자 <strong>주사위 신의 축복</strong>을 받은 마도사. 봉인된 마도서의 페이지를 넘기며 봉인 몬스터를 격파, 모든 페이지를 클리어하면 봉인 완료. 클리어 후 <strong>"한 권 더?"(OverRun)</strong> 가능.</p>
+  </div>
+</div>
+<h3>핵심 루프</h3>
+<div class="flow">
+  <span class="flow-step">마도서 선택</span><span class="flow-arrow">&rarr;</span>
+  <span class="flow-step">페이지 진입</span><span class="flow-arrow">&rarr;</span>
+  <span class="flow-step">주사위 롤 &amp; 고정</span><span class="flow-arrow">&rarr;</span>
+  <span class="flow-step">족보 선택 &amp; 주문 발동</span><span class="flow-arrow">&rarr;</span>
+  <span class="flow-step">붕괴 판정</span><span class="flow-arrow">&rarr;</span>
+  <span class="flow-step">몬스터 턴</span><span class="flow-arrow">&rarr;</span>
+  <span class="flow-step">보상 / 상점</span><span class="flow-arrow">&rarr;</span>
+  <span class="flow-step">다음 페이지</span>
+</div>
+<div class="card">
+  <h4>핵심 자원</h4>
+  <table>
+    <tr><th>자원</th><th>역할</th><th>기본값 <span class="badge-build">현재빌드</span></th></tr>
+    <tr><td class="highlight">HP</td><td>생존. 0 = 패배</td><td>60</td></tr>
+    <tr><td class="highlight">MP</td><td>주문 사용. 스테이지마다 2로 리셋, 턴마다 +2</td><td>최대 8, 시작 2</td></tr>
+    <tr><td class="highlight">Collapse</td><td>위험/보상 게이지. 100 = 패배</td><td>0</td></tr>
+    <tr><td class="highlight">Gold</td><td>상점 구매</td><td>80 (마도서별 보정)</td></tr>
+    <tr><td class="highlight">Hand Lock</td><td>족보 잠금. 13개 전부 잠기면 패배</td><td>페이지 전환 시 전해제</td></tr>
+  </table>
+</div>
+
+<hr>
+
+<!-- ====== 2 ====== -->
+<h2 id="s2">2. 아웃게임</h2>
+
+<h3 id="s2-library">2.1 도서관 (Library)</h3>
+<div class="card">
+  <p>타이틀 &rarr; [게임 시작] &rarr; 중세풍 서재 로드. 책장에는 <strong>해금된 전체 책 중 3~5권 규모의 랜덤 제안 풀</strong>이 배치되고, 별도 <strong>보관함(Vault)</strong>은 책/유물/몬스터 전체를 훑는 독립 백과사전으로 남는다.</p>
+  <p><span class="badge-build">현재빌드</span> 로비의 실제 선택은 <strong>4권 제안 풀</strong>로 고정돼 있고, `다시 뽑기`로 후보를 새로 갱신할 수 있다. 전체 카탈로그는 선택 흐름과 분리된 `보관함(Vault)`에서 책/유물/몬스터 탭으로만 다시 확인한다.</p>
+  <ul>
+    <li>마우스 오버: 책 제목 + 설명 툴팁</li>
+    <li>선택 시: 나머지 책 사라짐 &rarr; 줌인 &rarr; 책 펼침 &rarr; 1페이지 시작</li>
+    <li>보관함: 현재 선택과 무관하게 전체 책/유물/몬스터 정보를 읽는 reference 공간</li>
+  </ul>
+  <p><span class="badge-build">현재빌드</span> <strong>밸런스 랩</strong>: 시작 HP/MP/Gold/리롤 수 등 슬라이더로 즉시 조정 가능한 QA 도구.</p>
+</div>
+
+<h3 id="s2-grimoire">2.2 마도서 (Grimoire) &mdash; 전체 18권</h3>
+<div class="card">
+  <p>마도서는 한 번의 런을 정의. 총 페이지, 시작 스탯, 시작 유물, 몬스터 테마가 결정됨.</p>
+  <table>
+    <tr><th>#</th><th>이름</th><th>코드</th><th>페이지</th><th>테마</th><th>Gold</th><th>HP</th><th>MP</th><th>몬스터HP</th><th>몬스터ATK</th><th>시작 유물</th></tr>
+    <tr><td>1</td><td>초심자의 봉인서</td><td>1000001</td><td>15</td><td>슬라임</td><td>+10</td><td>+0</td><td>+0</td><td>-10</td><td>-2</td><td>&mdash;</td></tr>
+    <tr><td>2</td><td>중급자의 봉인서</td><td>1000002</td><td>30</td><td>고블린</td><td>+10</td><td>+0</td><td>+0</td><td>+0</td><td>+0</td><td>&mdash;</td></tr>
+    <tr><td>3</td><td>상급자의 봉인서</td><td>1000003</td><td>30</td><td>리치</td><td>+10</td><td>+0</td><td>+0</td><td>+10</td><td>+2</td><td>&mdash;</td></tr>
+    <tr><td>4</td><td>슬라임 백과사전</td><td>1000004</td><td>15</td><td>슬라임</td><td>+0</td><td>+0</td><td>+0</td><td>+0</td><td>+0</td><td>정령석 분광면</td></tr>
+    <tr><td>5</td><td>뼈가 있는 말</td><td>1000005</td><td>15</td><td>리치</td><td>+0</td><td>+0</td><td>+2</td><td>+10</td><td>+10</td><td>잿빛 깃펜</td></tr>
+    <tr><td>6</td><td>보물 고블린 장부</td><td>1000006</td><td>15</td><td>고블린</td><td>+15</td><td>+0</td><td>+0</td><td>+0</td><td>+0</td><td>보물 고블린 장부</td></tr>
+    <tr><td>7</td><td>고블린의 순찰지</td><td>1100001</td><td>15</td><td>고블린</td><td>+15</td><td>+0</td><td>+0</td><td>+0</td><td>+0</td><td>주사위의 문장 I</td></tr>
+    <tr><td>8</td><td>리치의 일기</td><td>1100002</td><td>15</td><td>리치</td><td>+15</td><td>+0</td><td>+3</td><td>+0</td><td>+0</td><td>역행의 모래시계</td></tr>
+    <tr><td>9</td><td>별빛 연습서</td><td>1200001</td><td>15</td><td>슬라임</td><td>+8</td><td>+12</td><td>+0</td><td>+0</td><td>+0</td><td>백지 수호 도판</td></tr>
+    <tr><td>10</td><td>도매상 거래 원장</td><td>1200002</td><td>15</td><td>고블린</td><td>+20</td><td>+0</td><td>+0</td><td>+0</td><td>+0</td><td>도매상 영수증 + 보물 고블린 장부</td></tr>
+    <tr><td>11</td><td>세 겹 장막본</td><td>1200003</td><td>15</td><td>리치</td><td>+5</td><td>+6</td><td>+0</td><td>+6</td><td>+0</td><td>서약의 버클 + 완충 제본끈</td></tr>
+    <tr><td>12</td><td>태엽 항해일지</td><td>1200004</td><td>30</td><td>고블린</td><td>+0</td><td>+0</td><td>+1</td><td>+0</td><td>+0</td><td>조율사의 나침반 + 잿빛 깃펜</td></tr>
+    <tr><td>13</td><td>화염 교정쇄</td><td>1200005</td><td>15</td><td>슬라임</td><td>+5</td><td>+0</td><td>+1</td><td>+0</td><td>+0</td><td>화염 분류표 + 불씨 촉매</td></tr>
+    <tr><td>14</td><td>빙결 관측 노트</td><td>1200006</td><td>15</td><td>리치</td><td>+5</td><td>+4</td><td>+1</td><td>+0</td><td>+0</td><td>빙결 분류표 + 서리 필사침</td></tr>
+    <tr><td>15</td><td>전격 실험지</td><td>1200007</td><td>15</td><td>고블린</td><td>+5</td><td>+0</td><td>+1</td><td>+0</td><td>+1</td><td>전격 분류표 + 감전 도체환</td></tr>
+    <tr><td>16</td><td>토석 압인본</td><td>1200008</td><td>15</td><td>슬라임</td><td>+5</td><td>+10</td><td>+0</td><td>+8</td><td>+0</td><td>대지 분류표 + 암반 압인석</td></tr>
+    <tr><td>17</td><td>종막 사냥 수첩</td><td>1200009</td><td>15</td><td>리치</td><td>+10</td><td>+0</td><td>+0</td><td>+10</td><td>+2</td><td>종막 눈금자 + 사냥 기입바늘</td></tr>
+    <tr><td>18</td><td>오탈자 수습본</td><td>1200010</td><td>15</td><td>고블린</td><td>+10</td><td>+0</td><td>+2</td><td>+0</td><td>+0</td><td>첫 불꽃 주석 + 오탈자 회수표</td></tr>
+  </table>
+  <div class="card card-alt">
+    <h4>현재 빌드 마도서 규칙 요약 <span class="badge-build">현재빌드</span></h4>
+    <p class="muted">대표 5권은 시작 스탯, 시작 유물, 책 카드 메타로 차별화되고, 아래 표는 <strong>현재 전투 규칙 훅이 실제로 연결된 마도서</strong>만 요약한다. 증분 조정 이력은 개발 추적 기획서와 자동화 실행 로그에서 관리한다.</p>
+    <table class="spec-table table-tight">
+      <tr><th>책</th><th>고유 규칙</th><th>현재 효과</th><th>현재 읽기</th></tr>
+      <tr><td>고블린의 순찰지</td><td>`순찰 노획품`</td><td>일반/보스 보상에서 강화석 선택지 1개 추가.</td><td>경제형 보상 확장.</td></tr>
+      <tr><td>리치의 일기</td><td>`역행 필사`</td><td>매 전투 첫 MP 4+ 족보 일치 주문 시 MP +2 환급.</td><td>고비용 주문 템포 보강.</td></tr>
+      <tr><td>오탈자 수습본</td><td>`초교정 여백`</td><td>매 전투 첫 족보 불일치 주문 1회는 잠금 없이 처리.</td><td>미스매치 탐색/순환형.</td></tr>
+      <tr><td>태엽 항해일지</td><td>`태엽 예열`</td><td>턴 종료 시 리롤 2회 이상 보존 시 다음 턴 MP +1, Shield +4.</td><td>리롤 보존형 운영.</td></tr>
+      <tr><td>세 겹 장막본</td><td>`장막 정렬`</td><td>턴 시작 시 보호막 10 이상이면 MP +1, 리롤 +1.</td><td>실드 유지형 운영.</td></tr>
+      <tr><td>화염 교정쇄</td><td>`재점화 교정`</td><td>매 턴 첫 적중 주문이 화상 부여, 화상 표적 재적중 시 MP 환급과 화상 확산.</td><td>도트 증폭형.</td></tr>
+      <tr><td>빙결 관측 노트</td><td>`서리 추적선`</td><td>매 턴 첫 적중 주문이 빙결 부여, 턴 시작 Shield +4, 빙결 표적 재적중 시 추가 냉기 4.</td><td>제어 + 재타격 보상형.</td></tr>
+      <tr><td>전격 실험지</td><td>`잔류 방전`</td><td>감전 부여 후 재적중 시 전격 잔광 8, 단일보스면 `전하 환류 8 + 보스 과전류 최대 6 + 전하 차폐 Shield +4`.</td><td>후반 단일보스 마무리/생존 동시 보강 축.</td></tr>
+      <tr><td>토석 압인본</td><td>`압인 붕락`</td><td>쇄약 부여 후 재적중 시 보호막 추가 파쇄 8, 붕락 6, 단일보스에서는 누적 쇄약 비례 최대 12와 `균열 차폐` Shield +4.</td><td>탱커 파쇄 + 후반 환전형.</td></tr>
+      <tr><td>종막 사냥 수첩</td><td>`종막 추적선`</td><td>첫 절반 이하 진입 대상에 MP +1, Shield +4, 보스면 추가 MP +1, Shield +2, 처형 구간 추격 12.</td><td>보스 러시 압축형.</td></tr>
+    </table>
+  </div>
+  <h4>OverRun</h4>
+  <p>1권 클리어 후 "한 권 더?" 선택 시 몬스터 스탯 &times;1.08 배율, 3회째마다 &times;1.16.</p>
+</div>
+
+<h3 id="s2-save">2.3 세이브 &amp; 설정</h3>
+<div class="grid-2">
+  <div class="card">
+    <h4>세이브 <span class="badge-plan">원안</span></h4>
+    <ul>
+      <li>수동 저장: ESC &rarr; "저장 후 종료" &rarr; 슬롯 선택</li>
+      <li>3개 슬롯 (StageIndex, PlayTime, ArtifactCount, Gold 표시)</li>
+    </ul>
+    <h4>세이브 <span class="badge-build">현재빌드</span></h4>
+    <p>localStorage 단순 저장 (향후 런 슬롯 확장 예정)</p>
+  </div>
+  <div class="card">
+    <h4>설정 메뉴</h4>
+    <table>
+      <tr><th>카테고리</th><th>항목</th></tr>
+      <tr><td>화면</td><td>해상도(16:9), 윈도우, 언어, FPS, VSync</td></tr>
+      <tr><td>사운드</td><td>마스터/BGM/SFX 볼륨 (기본 75), 백그라운드</td></tr>
+      <tr><td>시스템</td><td>계속하기, 저장 후 종료, 게임 종료</td></tr>
+    </table>
+  </div>
+</div>
+
+<hr>
+
+<!-- ====== 3 ====== -->
+<h2 id="s3">3. 인게임 전투</h2>
+
+<h3 id="s3-flow">3.1 전투 흐름 (턴 사이클)</h3>
+<div class="card">
+  <h4>1. 턴 시작</h4>
+  <ol>
+    <li>MP 회복: <code>BaseManaRegen(2) + 붕괴 티어 보너스 + 유물 보너스</code></li>
+    <li>상태이상 틱 (화상 데미지, 빙결 리롤 감소, 쇄약 실드 감소 등) &rarr; 지속시간 -1</li>
+    <li>몬스터 Shield -1 감쇠</li>
+    <li>리롤 횟수 리셋: <code>Base(3) + 유물 보너스 + 붕괴 보너스</code></li>
+    <li>주사위 잠금 해제, 값 초기화</li>
+    <li>몬스터 인텐트 결정 (가중치 + 조건 판정)</li>
+  </ol>
+  <h4>2. 주사위 롤링 &amp; 잠금</h4>
+  <ul>
+    <li>5개 6면체 주사위 &rarr; 잠금 해제된 것만 랜덤 굴림 &rarr; 리롤 -1</li>
+    <li>리롤 0이면 족보 선택 강제</li>
+    <li>첫 롤 이후 좌클릭으로 개별 잠금/해제 토글</li>
+  </ul>
+  <h4>3. 족보 선택 &amp; 주문 발동</h4>
+  <ul>
+    <li>최소 1회 롤, MP 충분, 미잠금 슬롯 필요</li>
+    <li>족보 미달성도 선택 가능 (0 데미지)</li>
+    <li>사용 슬롯 즉시 잠금</li>
+    <li>AOE: 즉시 전체 공격 / Single/Hybrid: 타겟 선택 모드 (1마리면 자동)</li>
+  </ul>
+  <h4>4. 결과 처리</h4>
+  <p>MP 소모 &rarr; 피해 적용 &rarr; 처치 시 Gold/CollapseOnKill/유물 효과 &rarr; 붕괴 확률 판정 &rarr; 상단 합계 보너스 체크</p>
+  <h4>5. 몬스터 턴</h4>
+  <p>좌&rarr;우 순서로 CurrentIntent 실행</p>
+  <h4>승리 / 패배</h4>
+  <table>
+    <tr><th>승리</th><td>모든 몬스터 HP = 0 (보스 처치 시 나머지 무시)</td></tr>
+    <tr><th rowspan="3">패배</th><td>HP &le; 0</td></tr>
+    <tr><td>Collapse &ge; 100</td></tr>
+    <tr><td>13 족보 전부 잠금</td></tr>
+  </table>
+</div>
+
+<h3 id="s3-dice">3.2 주사위 시스템</h3>
+<div class="card">
+  <table>
+    <tr><th>항목</th><th>값</th></tr>
+    <tr><td>주사위 수</td><td>5개 (6면체)</td></tr>
+    <tr><td>기본 리롤</td><td>3회/턴</td></tr>
+    <tr><td>조작</td><td>좌클릭 = 잠금/해제 토글 (첫 롤 후)</td></tr>
+    <tr><td>몬스터 강제 잠금</td><td>해제 불가</td></tr>
+    <tr><td>주문 사용 후</td><td>전체 잠금 해제, 리롤 3으로 리셋</td></tr>
+  </table>
+  <p>시각: 플레이어/몬스터 턴 색상 변경, 턴 전환 Disappear 애니메이션. 레퍼런스: "Die in the Dungeon"</p>
+</div>
+
+<h3 id="s3-hand">3.3 족보 &mdash; 기억 회람판 (13종)</h3>
+<div class="card">
+  <h4>레이아웃: 6-6-1 구조</h4>
+  <p>좌측 6 (Single 1~6), 우측 6 (Triple~Chance), 하단 중앙 1 (Yacht). 양피지 배경 카드.</p>
+  <table>
+    <tr><th>ID</th><th>이름</th><th>타겟</th><th>MP</th><th>기본DMG</th><th>Lv당DMG</th><th>피해 계산 <span class="badge-build">현재빌드</span></th></tr>
+    <tr><td>01</td><td>싱글 1</td><td>단일</td><td>1</td><td>0</td><td>5</td><td>해당 눈 개수 &times; 면값</td></tr>
+    <tr><td>02</td><td>싱글 2</td><td>단일</td><td>1</td><td>0</td><td>5</td><td>〃</td></tr>
+    <tr><td>03</td><td>싱글 3</td><td>단일</td><td>1</td><td>0</td><td>5</td><td>〃</td></tr>
+    <tr><td>04</td><td>싱글 4</td><td>단일</td><td>1</td><td>0</td><td>10</td><td>〃</td></tr>
+    <tr><td>05</td><td>싱글 5</td><td>단일</td><td>2</td><td>0</td><td>10</td><td>〃</td></tr>
+    <tr><td>06</td><td>싱글 6</td><td>단일</td><td>2</td><td>0</td><td>15</td><td>〃</td></tr>
+    <tr><td>07</td><td>트리플</td><td>광역</td><td>2</td><td>20</td><td>10</td><td>max(면값, 전체합)</td></tr>
+    <tr><td>08</td><td>포카인드</td><td>광역</td><td>3</td><td>28</td><td>10</td><td>max(면값, 전체합)</td></tr>
+    <tr><td>09</td><td>풀하우스</td><td>단일</td><td>3</td><td>30</td><td>20</td><td>30 + floor(합/2)</td></tr>
+    <tr><td>10</td><td>스몰 스트레이트</td><td>광역</td><td>3</td><td>32</td><td>30</td><td>고정 32</td></tr>
+    <tr><td>11</td><td>빅 스트레이트</td><td>광역</td><td>4</td><td>40</td><td>60</td><td>고정 40</td></tr>
+    <tr><td>12</td><td>찬스</td><td>단일</td><td>2</td><td>0</td><td>20</td><td>전체합</td></tr>
+    <tr><td>13</td><td>야추</td><td>광역</td><td>5</td><td>50</td><td>100</td><td>고정 50</td></tr>
+  </table>
+  <div class="note">슬롯 상태: 사용가능 / 잠금(자물쇠) / MP부족(흐림+빨강) / 전부잠금=패배. 마나 부족으로 사용 가능 족보 없으면 턴 자동 스킵 + 토스트 "마나 부족으로 몬스터 턴 전환".</div>
+</div>
+
+<h3 id="s3-damage">3.4 피해 공식</h3>
+<div class="card">
+  <h4>원안 공식 <span class="badge-plan">원안</span></h4>
+  <div class="formula">FinalDamage = [(Dbase + Fadd) × (1 + Bartifact + Bcollapse)] × (1 + Maffinity)</div>
+
+  <h4>현재 빌드 상세 공식 <span class="badge-build">현재빌드</span></h4>
+  <div class="formula">baseDamage = matchInfo.baseDamage + handPowerLevel × 4
+totalMultiplier = 1 + Σ(artifact bonuses) + collapse_tier_bonus
+statusDmgMult = 1 + (shock_stacks × 0.2) + (fracture_stacks × 0.1)
+finalDamage = floor(baseDamage × totalMultiplier × affinity × statusDmgMult)
+→ shieldAbsorbed = min(monster.shield, finalDamage)
+→ hpDamage = finalDamage - shieldAbsorbed</div>
+
+  <h4>유물 보너스 레이어</h4>
+  <table>
+    <tr><th>레이어</th><th>예시 유물</th><th>배율</th></tr>
+    <tr><td>전체 주문</td><td>역행의 모래시계</td><td>+50%</td></tr>
+    <tr><td>속성 부여 족보</td><td>정령석 분광면</td><td>+20~35%</td></tr>
+    <tr><td>원소별</td><td>화염/빙결/전격/대지 분류표</td><td>+30~35%</td></tr>
+    <tr><td>보스 대상</td><td>왕조 말소 인장</td><td>+18~40%</td></tr>
+    <tr><td>상태이상 적</td><td>종말의 주해</td><td>+20~40%</td></tr>
+    <tr><td>고비용 (MP≥4)</td><td>심판의 저울</td><td>+35%</td></tr>
+    <tr><td>만피 유지</td><td>잔잔한 호수 양피지</td><td>+24~32%</td></tr>
+    <tr><td>처형 (적HP≤50%)</td><td>종막 눈금자</td><td>+25~32%</td></tr>
+    <tr><td>저붕괴 (≤30)</td><td>붕괴 틈새 설계도</td><td>+18~25%</td></tr>
+    <tr><td>리롤 잔량</td><td>조율사의 나침반</td><td>잔량 × 8~12%</td></tr>
+  </table>
+</div>
+
+<h3 id="s3-upper">3.5 상단 합계 보너스 <span class="badge-build">현재빌드</span></h3>
+<div class="card">
+  <p>현재 빌드에서는 <strong>전투마다</strong> 싱글 1~6 점수를 따로 추적하고, 총합이 <strong>55점</strong> 이상이 되면 비문 보너스 드래프트가 열린다.</p>
+  <ul>
+    <li>대상은 <code>에이스~식스(aces~sixes)</code> 6칸이다.</li>
+    <li>싱글 족보를 사용할 때마다 해당 칸의 점수를 다시 기록한다.</li>
+    <li>족보가 일치하면 해당 상단 점수를 기록하고, 불일치로 시전하면 그 칸은 <strong>0점</strong>으로 덮어쓴다.</li>
+    <li>같은 칸을 나중에 다시 쓰면 이전 기록은 최신 결과로 교체된다.</li>
+    <li>총합이 <strong>55점 이상</strong>이고 아직 이번 전투에서 보너스를 열지 않았다면 즉시 드래프트가 열린다.</li>
+  </ul>
+  <p>단, 주문 해석 직후 <strong>패배 판정</strong> 또는 <strong>전투 클리어</strong>가 먼저 발생하면 드래프트는 열리지 않는다. 즉 현재 빌드의 순서는 `주문 해석 -> 처치/패배 확인 -> 전투가 계속될 때만 상단 합계 체크`다.</p>
+  <p>드래프트가 열리면 다른 전투 입력은 잠시 멈추고, 아래 10종 라이브러리 중 <strong>중복 없이 랜덤 3개</strong>가 제시된다. 1개를 고르면 효과를 즉시 적용한 뒤, 처치 재판정까지 끝내고 전투가 계속되면 붕괴 판정과 몬스터 턴으로 이어진다.</p>
+  <table>
+    <tr><th>보너스</th><th>효과</th></tr>
+    <tr><td>회복 양피지</td><td>HP +16, MP +2</td></tr>
+    <tr><td>비문 난사</td><td>생존 몬스터 전체 18 피해</td></tr>
+    <tr><td>도금 각주</td><td>Gold +35</td></tr>
+    <tr><td>보호막 표지</td><td>Shield +12</td></tr>
+    <tr><td>진정의 리본</td><td>Collapse -12</td></tr>
+    <tr><td>정화 필사</td><td>플레이어의 부정 상태이상 전부 제거 + HP +8</td></tr>
+    <tr><td>파열 파문</td><td>전체 몬스터 쇄약 1 (2턴)</td></tr>
+    <tr><td>재개된 여백</td><td>잠금 족보 1개 무작위 해제 (잠긴 족보가 없으면 MP +2)</td></tr>
+    <tr><td>마나 증폭</td><td>MP +4</td></tr>
+    <tr><td>처형 주석</td><td>현재 HP가 가장 높은 생존 몬스터에 max(24, floor(maxHP×18%)) 보호막 무시 피해 (대상 없으면 Gold +20)</td></tr>
+  </table>
+</div>
+
+<h3 id="s3-player">3.6 플레이어 상세</h3>
+<div class="card">
+  <h4>HP 규칙</h4>
+  <ul>
+    <li>스테이지 클리어해도 리셋 없이 유지</li>
+    <li>최대HP 증가 시 현재HP도 증가분만큼 함께 증가 (최대HP 초과 불가)</li>
+    <li>30% 미만: 화면 붉은 비네팅 점멸 + HP 바 떨림</li>
+  </ul>
+  <h4>MP 규칙</h4>
+  <ul>
+    <li>매 턴 시작 시 +2 회복 (+ 붕괴 보너스 + 유물)</li>
+    <li>페이지 클리어 시 2로 리셋</li>
+  </ul>
+  <h4>상태이상</h4>
+  <p>턴 시작 시 체크. DoT/회복 즉시 반영 &rarr; 지속시간 -1 &rarr; 0이면 해제. 동일 상태 중첩 시 지속시간 합산.</p>
+</div>
+
+<hr>
+
+<!-- ====== 4 ====== -->
+<h2 id="s4">4. 몬스터</h2>
+
+<div class="card">
+  <h4>HP/ATK 스케일링 공식 <span class="badge-build">현재빌드</span></h4>
+  <div class="formula">ScaledHP = baseHp + floor((page-1)/2) × hpGrowth
+ScaledATK = baseAtk + floor((page-1)/3) × atkGrowth
+FinalHP = max(earlyFloor, round(ScaledHP × roleMultiplier × (grimoireMonsterHP%/100)))</div>
+  <p>초반 페이지(≤4)에서는 HP 최소 바닥값(32~34) 보장. 몬스터 최대 3마리 (소환 시 3마리면 Shield +4 대체).</p>
+</div>
+
+<h3 id="s4-slime">4.1 슬라임 테마</h3>
+<div class="card">
+  <table>
+    <tr><th>이름</th><th>코드</th><th>속성</th><th>HP</th><th>ATK</th><th>HP증가</th><th>ATK증가</th><th>Gold</th><th>붕괴감소</th></tr>
+    <tr><td>노멀 슬라임</td><td>400010</td><td><span class="tag tag-none">무</span></td><td>15</td><td>3</td><td>+5</td><td>+1</td><td>5</td><td>2</td></tr>
+    <tr><td>화염 슬라임</td><td>400011</td><td><span class="tag tag-fire">화염</span></td><td>18</td><td>4</td><td>+6</td><td>+2</td><td>7</td><td>2</td></tr>
+    <tr><td>냉기 슬라임</td><td>400012</td><td><span class="tag tag-ice">냉기</span></td><td>18</td><td>3</td><td>+6</td><td>+1</td><td>7</td><td>2</td></tr>
+    <tr><td>전격 슬라임</td><td>400013</td><td><span class="tag tag-elec">전격</span></td><td>16</td><td>5</td><td>+5</td><td>+2</td><td>8</td><td>2</td></tr>
+    <tr style="background:rgba(168,86,56,.15)"><td><strong>슬라임 킹</strong></td><td>400020</td><td><span class="tag tag-none">무</span></td><td>220</td><td>12</td><td>+23</td><td>+3</td><td>60</td><td>8</td></tr>
+    <tr style="background:rgba(168,56,56,.15)"><td><strong>심연의 슬라임 도감</strong></td><td>400021</td><td><span class="tag tag-ice">냉기</span></td><td>300</td><td>14</td><td>+24</td><td>+4</td><td>90</td><td>12</td></tr>
+  </table>
+</div>
+
+<h3 id="s4-goblin">4.2 고블린 테마</h3>
+<div class="card">
+  <table>
+    <tr><th>이름</th><th>코드</th><th>속성</th><th>HP</th><th>ATK</th><th>HP증가</th><th>ATK증가</th><th>Gold</th><th>붕괴감소</th></tr>
+    <tr><td>고블린 스카웃</td><td>410003</td><td><span class="tag tag-none">무</span></td><td>22</td><td>5</td><td>+5</td><td>+1</td><td>8</td><td>2</td></tr>
+    <tr><td>노말 고블린</td><td>410004</td><td><span class="tag tag-none">무</span></td><td>26</td><td>6</td><td>+6</td><td>+2</td><td>10</td><td>3</td></tr>
+    <tr><td>얼음 고블린</td><td>410005</td><td><span class="tag tag-ice">냉기</span></td><td>28</td><td>7</td><td>+6</td><td>+2</td><td>10</td><td>3</td></tr>
+    <tr><td>전격 고블린</td><td>410007</td><td><span class="tag tag-elec">전격</span></td><td>24</td><td>8</td><td>+5</td><td>+2</td><td>11</td><td>3</td></tr>
+    <tr style="background:rgba(168,86,56,.15)"><td><strong>고블린 대장</strong></td><td>410020</td><td><span class="tag tag-earth">대지</span></td><td>250</td><td>14</td><td>+22</td><td>+3</td><td>65</td><td>8</td></tr>
+    <tr style="background:rgba(168,56,56,.15)"><td><strong>보물 고블린 왕</strong></td><td>410030</td><td><span class="tag tag-elec">전격</span></td><td>320</td><td>16</td><td>+24</td><td>+4</td><td>100</td><td>12</td></tr>
+  </table>
+  <div class="note">내부 구현 메모: 고블린 테마의 몬스터-스킬 연결은 별도 상세 시트로 분리했다. 현재 런타임 해석본은 <code>goblin_theme_skill_assignment_kr.md</code>, Unity 프로그래머 전달본은 <code>goblin_theme_skill_assignment_unity_kr.md</code>를 기준으로 사용한다.</div>
+</div>
+
+<h3 id="s4-lich">4.3 리치 테마</h3>
+<div class="card">
+  <table>
+    <tr><th>이름</th><th>코드</th><th>속성</th><th>HP</th><th>ATK</th><th>HP증가</th><th>ATK증가</th><th>Gold</th><th>붕괴감소</th></tr>
+    <tr><td>사골 서기</td><td>420010</td><td><span class="tag tag-earth">대지</span></td><td>24</td><td>6</td><td>+6</td><td>+1</td><td>10</td><td>3</td></tr>
+    <tr><td>리치 수행사제</td><td>420011</td><td><span class="tag tag-fire">화염</span></td><td>20</td><td>8</td><td>+6</td><td>+2</td><td>12</td><td>3</td></tr>
+    <tr><td>무덤 기사</td><td>420012</td><td><span class="tag tag-none">무</span></td><td>32</td><td>7</td><td>+7</td><td>+2</td><td>12</td><td>3</td></tr>
+    <tr><td>서고 박쥐</td><td>420013</td><td><span class="tag tag-none">무</span></td><td>14</td><td>7</td><td>+4</td><td>+2</td><td>10</td><td>2</td></tr>
+    <tr><td>금간 해골</td><td>420014</td><td><span class="tag tag-none">무</span></td><td>12</td><td>10</td><td>+4</td><td>+3</td><td>11</td><td>2</td></tr>
+    <tr><td>잿빛 와이번</td><td>420015</td><td><span class="tag tag-fire">화염</span></td><td>18</td><td>9</td><td>+5</td><td>+2</td><td>12</td><td>2</td></tr>
+    <tr><td>기록 골렘</td><td>420016</td><td><span class="tag tag-earth">대지</span></td><td>30</td><td>8</td><td>+7</td><td>+2</td><td>13</td><td>3</td></tr>
+    <tr><td>붕락 정령</td><td>420017</td><td><span class="tag tag-elec">전격</span></td><td>16</td><td>6</td><td>+5</td><td>+2</td><td>12</td><td>2</td></tr>
+    <tr style="background:rgba(168,86,56,.15)"><td><strong>기억의 리치</strong></td><td>420020</td><td><span class="tag tag-ice">냉기</span></td><td>240</td><td>15</td><td>+22</td><td>+3</td><td>70</td><td>8</td></tr>
+    <tr style="background:rgba(168,56,56,.15)"><td><strong>폐허의 기록술사</strong></td><td>420030</td><td><span class="tag tag-fire">화염</span></td><td>340</td><td>18</td><td>+25</td><td>+4</td><td>110</td><td>12</td></tr>
+  </table>
+</div>
+
+<h3 id="s4-ai">4.4 몬스터 AI</h3>
+<div class="card">
+  <h4>인텐트 결정 프로세스</h4>
+  <ol>
+    <li>PatternPriority 순(낮을수록 우선) 정렬</li>
+    <li>ConditionType &amp; ConditionValue로 발동 조건 판정</li>
+    <li>같은 우선순위·조건 만족 시 PatternWeight 가중치 랜덤 선택</li>
+    <li>PatternCooldown 체크 (대기 중이면 스킵)</li>
+  </ol>
+  <h4>인텐트 타입</h4>
+  <table>
+    <tr><th>타입</th><th>아이콘</th><th>동작</th></tr>
+    <tr><td>공격 (attack)</td><td>칼</td><td>BaseATK × DamageMultiplier 피해</td></tr>
+    <tr><td>방어 (defend/guard)</td><td>방패</td><td>Shield 부여</td></tr>
+    <tr><td>버프 (buff)</td><td>↑ 화살표</td><td>격노(+2ATK/스택, 3턴) 등</td></tr>
+    <tr><td>붕괴 (collapse)</td><td>소용돌이</td><td>CollapseIncrease만큼 게이지 증가</td></tr>
+    <tr><td>회복 (heal)</td><td>하트</td><td>자신 HP 회복</td></tr>
+    <tr><td>소환 (spawn)</td><td>별</td><td>SpawnMonster (3마리 캡 시 Shield +4)</td></tr>
+  </table>
+  <h4>PatternEffectType 15종</h4>
+  <table>
+    <tr><th>효과</th><th>설명</th></tr>
+    <tr><td>SelfDivision</td><td>자기 분열</td></tr>
+    <tr><td>SpawnMonster</td><td>몬스터 소환</td></tr>
+    <tr><td>ApplyState</td><td>상태이상 부여</td></tr>
+    <tr><td>HealSelf / BuffATK / ReviveSelf</td><td>자가 회복/버프/부활</td></tr>
+    <tr><td>ElementShift / DamageReduction</td><td>속성 변환/피해 감소</td></tr>
+    <tr><td>ModifyCollapse / BuffByCollapse / DamageByCollapse</td><td>붕괴 관련</td></tr>
+    <tr><td>DamageToPlayer / KillTarget</td><td>플레이어 최대HP% 피해/즉사</td></tr>
+    <tr><td>GrantArtifact / SetNextAction</td><td>유물 부여/다음 행동 지정</td></tr>
+  </table>
+</div>
+
+<h3 id="s4-plan">4.5 추가 몬스터 현황 및 후속 원안 <span class="badge-build">현재빌드</span> <span class="badge-plan">원안</span></h3>
+<div class="card">
+  <div class="note">4.1~4.4는 현재 빌드 기준 몬스터 페이지다. 이 섹션은 그 기준에 맞춰 <strong>이미 반영된 추가 몬스터</strong>와 <strong>다음 후보</strong>를 같은 형식으로 정리한다.</div>
+  <table>
+    <tr><th>상태</th><th>이름</th><th>코드</th><th>분류</th><th>핵심 패턴</th><th>비고</th></tr>
+    <tr>
+      <td><span class="badge-build">현재빌드</span></td>
+      <td>서고 박쥐</td>
+      <td>420013</td>
+      <td>lich / normal / 교란</td>
+      <td>받는 주문 피해 50% 감소, 공격으로 입힌 HP 피해의 50% 흡혈, <code>attack/attack/burn</code></td>
+      <td>3마리 전투의 세 번째 역할 슬롯을 우선 채우는 교란형 적.</td>
+    </tr>
+    <tr>
+      <td><span class="badge-build">현재빌드</span></td>
+      <td>금간 해골</td>
+      <td>420014</td>
+      <td>lich / normal / 돌격</td>
+      <td>저HP 고ATK, 사망 시 50% 확률 1회 부활, 공격 적중 시 빙결+쇄약</td>
+      <td>후반 tier-4 스폰풀의 돌격 압박 축을 보강한다.</td>
+    </tr>
+    <tr>
+      <td><span class="badge-build">현재빌드</span></td>
+      <td>잿빛 와이번</td>
+      <td>420015</td>
+      <td>lich / normal / 교란</td>
+      <td>전투 첫 턴 단일 주문 피해 무효, 무피해 유지 시 공격력 10% 상승, <code>attack/burn/attack</code></td>
+      <td>후반 tier-4 교란 슬롯에서 단일 폭딜 견제 축을 맡는다.</td>
+    </tr>
+    <tr>
+      <td><span class="badge-build">현재빌드</span></td>
+      <td>기록 골렘</td>
+      <td>420016</td>
+      <td>lich / normal / 방벽</td>
+      <td>보호막이 남아 있는 동안 주문 피해 25% 감소, 공격 적중 시 쇄약, <code>guard/collapse/attack</code></td>
+      <td>후반 normal 전투에 `먼저 방벽을 벗겨야 하는` 미니 퍼즐을 추가한다.</td>
+    </tr>
+    <tr>
+      <td><span class="badge-build">현재빌드</span></td>
+      <td>붕락 정령</td>
+      <td>420017</td>
+      <td>lich / normal / 술사</td>
+      <td>플레이어 붕괴 10%마다 공격 +1, 처치 시 현재 붕괴 비례 마나 폭발, <code>collapse/attack/burn</code></td>
+      <td>후반 normal 전투에 `지금 마무리할지, 붕괴를 먼저 식힐지`를 다시 묻는 붕괴 술사 슬롯을 추가한다.</td>
+    </tr>
+    <tr>
+      <td><span class="badge-plan">원안</span></td>
+      <td>골렘</td>
+      <td>-</td>
+      <td>후속 elite / boss</td>
+      <td>고HP, 속성 전환, 실드 기반 분쇄 충전</td>
+      <td>`기록 골렘` 이후 다음 보스형 확장 후보.</td>
+    </tr>
+  </table>
+</div>
+
+<div class="card card-alt">
+  <h4>현재 빌드 메모 + 후속 후보</h4>
+  <details>
+    <summary>금간 해골 &mdash; 이번 턴 반영된 현재 빌드 버전</summary>
+    <ul><li>해치웠나?: 사망 시 50% 확률로 10%HP로 1회 부활</li><li>뼈다귀 투척: 플레이어에게 빙결 1 / 2턴 + 쇄약 1 / 2턴 동시 부여</li><li>이번 구현은 공용 <code>revive</code> / <code>onHitStatuses</code> 훅을 같이 도입해 후속 원안 적 확장 기반으로 사용한다.</li></ul>
+  </details>
+  <details open>
+    <summary>잿빛 와이번 &mdash; 이번 턴 반영된 현재 빌드 버전</summary>
+    <ul><li>코드 420015, 화염 / normal / 교란 후보로 반영됐다.</li><li>비늘 활공: 전투 첫 턴에는 단일 주문 피해를 무효화한다.</li><li>자유로운 비행: 플레이어 턴 동안 HP 피해를 받지 않으면 다음 행동 직전 공격력이 10%씩 상승한다.</li><li>광역 주문은 그대로 통과하므로 `단일 폭딜 견제 + 광역 대응 유도` 축으로 읽히게 설계했다.</li></ul>
+  </details>
+  <details open>
+    <summary>골렘 &mdash; 이번 슬롯 반영된 현재 빌드 버전</summary>
+    <ul><li>`기록 골렘(420016)`을 후반 normal 스폰풀의 `방벽` 역할 슬롯으로 추가했다.</li><li>`석판 공명`: 보호막이 남아 있는 동안 주문 피해를 25% 덜 받는다.</li><li>행동은 `방어 -> 붕괴 -> 공격` 축을 기본으로 하고, 공격 적중 시 쇄약 1 / 2턴을 걸어 다음 턴 압박까지 남긴다.</li><li>즉 이번 단계 목표는 `완성형 보스 기믹`보다 `지금 빌드에 즉시 재미를 더하는 신규 위협 슬롯`이며, 이후 반응이 좋으면 속성 전환/분쇄 충전으로 확장한다.</li></ul>
+  </details>
+  <details open>
+    <summary>정령 &mdash; 이번 슬롯 반영된 현재 빌드 버전</summary>
+    <ul><li>`붕락 정령(420017)`을 후반 normal 스폰풀의 `술사` 역할 슬롯으로 추가했다.</li><li>`마나 폭풍`: 플레이어 붕괴 10%마다 공격이 +1씩 오른다.</li><li>`마나 폭발`: 처치 시 현재 붕괴에 비례한 폭발 피해를 남겨, 마무리 타이밍과 붕괴 관리 순서를 다시 묻게 만든다.</li><li>즉 이번 단계 목표는 `정령이 붕괴 리스크를 어떻게 되물어 오는가`를 짧고 선명한 위협 하나로 구현하는 것이며, 이후 반응이 좋으면 elite/보스형 정령이나 보상 이벤트와 연결해 확장한다.</li></ul>
+  </details>
+  <details>
+    <summary>원안 보스: 고블린 킹 / 대왕 슬라임 / 케르베로스 / 대마법사의 골렘 / 리치킹 / 드래곤</summary>
+    <ul>
+      <li><strong>고블린 킹:</strong> 아군 사망 시 고블린 2마리 소환</li>
+      <li><strong>대왕 슬라임:</strong> 분열 + 잡아먹기(아군≤20%HP 흡수, HP 2배)</li>
+      <li><strong>케르베로스:</strong> 해골 소환 후 다음 턴 생존 시 흡수, 1.3× [취약]+[약화]</li>
+      <li><strong>대마법사의 골렘:</strong> 속성 회전 + 분쇄 충전</li>
+      <li><strong>리치킹:</strong> 100% 1회 부활(50%HP), 사망 시 저주 유물 부여</li>
+      <li><strong>드래곤:</strong> 브레스(1.0×공격×붕괴%), 책찢기(붕괴+10%, 사용마다+10%)</li>
+    </ul>
+  </details>
+</div>
+
+<hr>
+
+<!-- ====== 5 ====== -->
+<h2 id="s5">5. 붕괴 시스템 (Collapse)</h2>
+<div class="card">
+  <div class="summary-box">
+    <h3>핵심: 위험과 보상의 이중 자원</h3>
+    <p>붕괴가 오를수록 MP 회복과 공격 보너스가 커지지만, 동시에 패배 리스크도 증가.</p>
+  </div>
+
+  <h4>붕괴 확률 공식</h4>
+  <div class="grid-2">
+    <div>
+      <h5><span class="badge-plan">원안</span></h5>
+      <div class="formula">Prob = 50% + (Gauge × 0.4%) + BonusProb
+Inc = 8 + BonusInc
+최소확률 = 1%</div>
+    </div>
+    <div>
+      <h5><span class="badge-build">현재빌드</span></h5>
+      <div class="formula">Prob = clamp(0.07 + gauge×0.002 - reduction, 0.04, 0.55)
+Inc = 7 per proc</div>
+    </div>
+  </div>
+  <p>몬스터 처치 시 CollapseOnKill 감소. 유물로도 감소 가능.</p>
+
+  <h4>구간별 효과 <span class="badge-build">현재빌드</span></h4>
+  <table>
+    <tr><th>게이지</th><th>단계</th><th>MP 보너스</th><th>피해 보너스</th><th>추가 리롤</th></tr>
+    <tr><td>0~19</td><td>정적</td><td>+0</td><td>+0%</td><td>0</td></tr>
+    <tr><td>20~39</td><td>요동</td><td>+1</td><td>+0%</td><td>0</td></tr>
+    <tr><td>40~59</td><td>균열</td><td>+2</td><td>+8%</td><td>0</td></tr>
+    <tr><td>60~79</td><td>호전</td><td>+3</td><td>+20%</td><td>0</td></tr>
+    <tr><td>80~89</td><td>격류</td><td>+4</td><td>+32%</td><td>0</td></tr>
+    <tr><td>90~100</td><td style="color:var(--accent-fire)">과부하</td><td>+4</td><td>+32%</td><td>+1</td></tr>
+  </table>
+
+  <h4>구간별 효과 <span class="badge-plan">원안</span></h4>
+  <table>
+    <tr><th>게이지</th><th>플레이어</th><th>몬스터</th></tr>
+    <tr><td>매 20%</td><td>MP +1</td><td>&mdash;</td></tr>
+    <tr><td>40%</td><td>&mdash;</td><td>매 턴 HP 회복</td></tr>
+    <tr><td>60%</td><td>&mdash;</td><td>피해+20%, 받는 피해+10%</td></tr>
+    <tr><td>80%</td><td>&mdash;</td><td>피해+40%, 받는 피해+20%</td></tr>
+    <tr><td>90%</td><td>리롤 +3</td><td>&mdash;</td></tr>
+    <tr><td>100%</td><td colspan="2"><strong>패배</strong></td></tr>
+  </table>
+
+  <h4>UI 연출</h4>
+  <p>우상단 보라색 프로그레스 바. 수치 변동 시 0.5초 보간. 90% 이상 떨림. 30/60/90% 구간별 책 손상 심화 연출. 패배 시 책 찢어짐.</p>
+</div>
+
+<hr>
+
+<!-- ====== 6 ====== -->
+<h2 id="s6">6. 속성 시스템</h2>
+<div class="card">
+  <h4>4원소 + 무속성</h4>
+  <table>
+    <tr><th>속성</th><th>색상</th><th>고유 효과</th><th>효과 상세 <span class="badge-build">현재빌드</span></th></tr>
+    <tr><td><span class="tag tag-fire">화염</span></td><td>#ff845e</td><td>화상 DoT</td><td>4 + burnBonus 피해/스택/턴, 2턴 지속</td></tr>
+    <tr><td><span class="tag tag-ice">냉기</span></td><td>#86d3ff</td><td>빙결 중첩 &rarr; 기절</td><td>플레이어: -리롤, 몬스터: -공격×2. 3중첩 시 1턴 기절</td></tr>
+    <tr><td><span class="tag tag-elec">전격</span></td><td>#f6d667</td><td>감전 (받는 피해 ↑)</td><td>받는 피해 +20%/스택, 2턴</td></tr>
+    <tr><td><span class="tag tag-earth">대지</span></td><td>#93c56d</td><td>쇄약 (피해↑ + 실드파괴)</td><td>받는 피해 +10%/스택 + 실드 2×스택 감소/턴, 2턴</td></tr>
+  </table>
+
+  <h4>속성 상성 매트릭스</h4>
+  <table>
+    <tr><th>공격↓ / 방어→</th><th><span class="tag tag-fire">화</span></th><th><span class="tag tag-ice">빙</span></th><th><span class="tag tag-elec">전</span></th><th><span class="tag tag-earth">대</span></th><th>무</th></tr>
+    <tr><td><span class="tag tag-fire">화염</span></td><td>0.8</td><td style="color:var(--accent-fire)"><b>1.2</b></td><td>1.0</td><td>0.8</td><td>1.0</td></tr>
+    <tr><td><span class="tag tag-ice">냉기</span></td><td>0.8</td><td>0.8</td><td>1.0</td><td style="color:var(--accent-fire)"><b>1.2</b></td><td>1.0</td></tr>
+    <tr><td><span class="tag tag-elec">전격</span></td><td style="color:var(--accent-fire)"><b>1.2</b></td><td>1.0</td><td>0.8</td><td>0.8</td><td>1.0</td></tr>
+    <tr><td><span class="tag tag-earth">대지</span></td><td>1.0</td><td>0.8</td><td style="color:var(--accent-fire)"><b>1.2</b></td><td>0.8</td><td>1.0</td></tr>
+    <tr><td>무속성</td><td>1.0</td><td>1.0</td><td>1.0</td><td>1.0</td><td>1.0</td></tr>
+  </table>
+  <div class="note">양쪽 모두 속성이 있을 때만 상성 적용. 한쪽이라도 무속성이면 1.0×.</div>
+
+  <h4>정령석 (Spirit Stone)</h4>
+  <ul>
+    <li>소모성. 족보 슬롯에 속성 부여</li>
+    <li>부여 우선순위: ① 미부여 슬롯 랜덤 ② 전부 부여 시 기존 속성 덮어쓰기</li>
+    <li>획득: <span class="badge-plan">원안</span> 상점 구매 / <span class="badge-build">현재빌드</span> 전투 보상</li>
+  </ul>
+</div>
+
+<hr>
+
+<!-- ====== 7 ====== -->
+<h2 id="s7">7. 유물 (Artifact) &mdash; 전체 61종 <span class="badge-build">현재빌드</span></h2>
+<div class="card">
+  <h4>기본 규칙</h4>
+  <ul>
+    <li>획득: 상점(Gold) / 보스 보상(3택 1, 무료)</li>
+    <li>세션 영구, 판매/제거 불가, 중복 불가</li>
+  </ul>
+  <h4>가격 & 드랍 가중치</h4>
+  <table>
+    <tr><th>등급</th><th>가격</th><th>상점 가중치</th><th>프레임</th></tr>
+    <tr><td><span class="tag tag-common">Common</span></td><td>65G</td><td>50</td><td>회색</td></tr>
+    <tr><td><span class="tag tag-rare">Rare</span></td><td>95G</td><td>30</td><td>파랑</td></tr>
+    <tr><td><span class="tag tag-epic">Epic</span></td><td>120G</td><td>15</td><td>보라</td></tr>
+    <tr><td><span class="tag tag-hero">Heroic</span></td><td>135G</td><td>4</td><td>주황</td></tr>
+    <tr><td><span class="tag tag-legend">Legendary</span></td><td>145G</td><td>1</td><td>금색</td></tr>
+  </table>
+</div>
+
+<h4 id="s7-dice-art">7.1 주사위 조작 유물</h4>
+<div class="card">
+  <table>
+    <tr><th>코드</th><th>이름</th><th>등급</th><th>효과</th></tr>
+    <tr><td>70001</td><td>주사위의 문장 I</td><td><span class="tag tag-common">C</span></td><td>눈 1 포함 시 개당 피해 +30%</td></tr>
+    <tr><td>70002</td><td>주사위의 문장 II</td><td><span class="tag tag-common">C</span></td><td>눈 2 포함 시 개당 피해 +30%</td></tr>
+    <tr><td>70003</td><td>주사위의 문장 III</td><td><span class="tag tag-common">C</span></td><td>눈 3 포함 시 개당 피해 +30%</td></tr>
+    <tr><td>70004</td><td>주사위의 문장 IV</td><td><span class="tag tag-rare">R</span></td><td>눈 4 포함 시 개당 피해 +30%</td></tr>
+    <tr><td>70005</td><td>주사위의 문장 V</td><td><span class="tag tag-rare">R</span></td><td>눈 5 포함 시 개당 피해 +30%</td></tr>
+    <tr><td>70006</td><td>주사위의 문장 VI</td><td><span class="tag tag-rare">R</span></td><td>눈 6 포함 시 개당 피해 +30%</td></tr>
+    <tr><td>70008</td><td>잿빛 깃펜</td><td><span class="tag tag-rare">R</span></td><td>리롤 +1/턴</td></tr>
+    <tr><td>70042</td><td>조율사의 나침반</td><td><span class="tag tag-rare">R</span></td><td>남은 리롤 1개당 피해 +8%</td></tr>
+    <tr><td>70046</td><td>태양선 항법기</td><td><span class="tag tag-epic">E</span></td><td>남은 리롤 1개당 피해 +12%</td></tr>
+  </table>
+</div>
+
+<h4 id="s7-hand-art">7.2 족보 강화 유물</h4>
+<div class="card">
+  <table>
+    <tr><th>코드</th><th>이름</th><th>등급</th><th>효과</th></tr>
+    <tr><td>70007</td><td>역행의 모래시계</td><td><span class="tag tag-epic">E</span></td><td>모든 주문 피해 +50%</td></tr>
+    <tr><td>70011</td><td>정령석 분광면</td><td><span class="tag tag-rare">R</span></td><td>속성 부여 족보 피해 +20%</td></tr>
+    <tr><td>70015</td><td>회오리 주해서</td><td><span class="tag tag-rare">R</span></td><td>AOE 피해 +25%</td></tr>
+    <tr><td>70016</td><td>결투가의 서약</td><td><span class="tag tag-rare">R</span></td><td>단일 타겟 피해 +25%</td></tr>
+    <tr><td>70017</td><td>나선 책갈피</td><td><span class="tag tag-epic">E</span></td><td>스트레이트 피해 +35%</td></tr>
+    <tr><td>70018</td><td>심판의 저울</td><td><span class="tag tag-epic">E</span></td><td>MP≥4 족보 피해 +35%</td></tr>
+    <tr><td>70019</td><td>철벽 낙인</td><td><span class="tag tag-rare">R</span></td><td>실드≥4일 때 피해 +25%</td></tr>
+    <tr><td>70036</td><td>병렬 정령핵</td><td><span class="tag tag-hero">H</span></td><td>속성 부여 족보 +25%, 상태이상 +1턴</td></tr>
+    <tr><td>70039</td><td>원소 총람</td><td><span class="tag tag-legend">L</span></td><td>속성 부여 +35%, +1스택/+1턴</td></tr>
+  </table>
+</div>
+
+<h4 id="s7-collapse-art">7.3 붕괴 관련 유물</h4>
+<div class="card">
+  <table>
+    <tr><th>코드</th><th>이름</th><th>등급</th><th>효과</th></tr>
+    <tr><td>70012</td><td>균열 나침반</td><td><span class="tag tag-legend">L</span></td><td>붕괴확률 -20%, 60 이상 시 +20%</td></tr>
+    <tr><td>70031</td><td>정숙 교범</td><td><span class="tag tag-rare">R</span></td><td>붕괴≤30일 때 피해 +18%</td></tr>
+    <tr><td>70049</td><td>붕괴 틈새 설계도</td><td><span class="tag tag-epic">E</span></td><td>붕괴≤30일 때 피해 +25%</td></tr>
+  </table>
+</div>
+
+<h4 id="s7-stat-art">7.4 스탯 / 원소 유물</h4>
+<div class="card">
+  <table>
+    <tr><th>코드</th><th>이름</th><th>등급</th><th>효과</th></tr>
+    <tr><td>70014</td><td>유리 방패 연감</td><td><span class="tag tag-common">C</span></td><td>턴 시작 실드 +3</td></tr>
+    <tr><td>70044</td><td>서약의 버클</td><td><span class="tag tag-common">C</span></td><td>족보 매치 시 실드 +3</td></tr>
+    <tr><td>70048</td><td>철합창 장정끈</td><td><span class="tag tag-rare">R</span></td><td>족보 매치 시 실드 +5</td></tr>
+    <tr><td>70053</td><td>완충 제본끈</td><td><span class="tag tag-rare">R</span></td><td>턴 시작 실드 +5</td></tr>
+    <tr><td>70061</td><td>메아리 성벽 척추</td><td><span class="tag tag-hero">H</span></td><td>족보 매치 시 실드 +8</td></tr>
+    <tr><td>70043</td><td>백지 수호 도판</td><td><span class="tag tag-rare">R</span></td><td>만피 유지 시 피해 +24%</td></tr>
+    <tr><td>70047</td><td>잔잔한 호수 양피지</td><td><span class="tag tag-epic">E</span></td><td>만피 유지 시 피해 +32%</td></tr>
+    <tr><td>70021</td><td>벼랑 끝 계약서</td><td><span class="tag tag-legend">L</span></td><td>HP≤50% 시 피해 +30%</td></tr>
+    <tr><td>70054</td><td>화염 분류표</td><td><span class="tag tag-rare">R</span></td><td>화염 피해 +35%</td></tr>
+    <tr><td>70055</td><td>빙결 분류표</td><td><span class="tag tag-rare">R</span></td><td>빙결 피해 +35%</td></tr>
+    <tr><td>70056</td><td>전격 분류표</td><td><span class="tag tag-rare">R</span></td><td>전격 피해 +35%</td></tr>
+    <tr><td>70057</td><td>대지 분류표</td><td><span class="tag tag-rare">R</span></td><td>대지 피해 +35%</td></tr>
+    <tr><td>70032</td><td>여명 잉크병</td><td><span class="tag tag-epic">E</span></td><td>턴 시작 MP +1</td></tr>
+    <tr><td>70052</td><td>행렬 시계추</td><td><span class="tag tag-legend">L</span></td><td>턴 시작 MP +2</td></tr>
+  </table>
+</div>
+
+<h4 id="s7-status-art">7.5 상태이상 특화 유물</h4>
+<div class="card">
+  <table>
+    <tr><th>코드</th><th>이름</th><th>등급</th><th>효과</th></tr>
+    <tr><td>70024</td><td>불씨 촉매</td><td><span class="tag tag-common">C</span></td><td>화상 중첩 +1</td></tr>
+    <tr><td>70025</td><td>서리 필사침</td><td><span class="tag tag-common">C</span></td><td>빙결 중첩 +1</td></tr>
+    <tr><td>70026</td><td>감전 도체환</td><td><span class="tag tag-common">C</span></td><td>감전 중첩 +1</td></tr>
+    <tr><td>70027</td><td>암반 압인석</td><td><span class="tag tag-common">C</span></td><td>쇄약 중첩 +1</td></tr>
+    <tr><td>70029</td><td>타르 봉인지</td><td><span class="tag tag-rare">R</span></td><td>화상 데미지 +2/스택</td></tr>
+    <tr><td>70033</td><td>감전 증폭기</td><td><span class="tag tag-epic">E</span></td><td>감전 적 피해 +25%</td></tr>
+    <tr><td>70034</td><td>한기 절개도</td><td><span class="tag tag-epic">E</span></td><td>빙결 적 피해 +25%</td></tr>
+    <tr><td>70035</td><td>장기 보존제</td><td><span class="tag tag-epic">E</span></td><td>모든 상태이상 +1턴</td></tr>
+    <tr><td>70028</td><td>여진 감식판</td><td><span class="tag tag-rare">R</span></td><td>상태이상 적 피해 +20%</td></tr>
+    <tr><td>70038</td><td>상태 계통도</td><td><span class="tag tag-hero">H</span></td><td>상태이상 적 피해 +30%</td></tr>
+    <tr><td>70040</td><td>종말의 주해</td><td><span class="tag tag-legend">L</span></td><td>상태이상 적 피해 +40%</td></tr>
+  </table>
+</div>
+
+<h4 id="s7-utility-art">7.6 유틸리티 / 보스 / 경제 유물</h4>
+<div class="card">
+  <table>
+    <tr><th>코드</th><th>이름</th><th>등급</th><th>효과</th></tr>
+    <tr><td>70010</td><td>보물 고블린 장부</td><td><span class="tag tag-epic">E</span></td><td>처치 시 Gold +4</td></tr>
+    <tr><td>70020</td><td>수확자 갈고리</td><td><span class="tag tag-epic">E</span></td><td>처치 시 MP +1</td></tr>
+    <tr><td>70023</td><td>오답 지우개</td><td><span class="tag tag-common">C</span></td><td>미달성 족보 사용 시 MP 1 환불</td></tr>
+    <tr><td>70050</td><td>첫 불꽃 주석</td><td><span class="tag tag-common">C</span></td><td>첫 주문 MP -1</td></tr>
+    <tr><td>70013</td><td>교정자의 칼날</td><td><span class="tag tag-rare">R</span></td><td>첫 주문 MP -1</td></tr>
+    <tr><td>70051</td><td>오탈자 회수표</td><td><span class="tag tag-rare">R</span></td><td>미달성 족보 사용 시 MP 2 환불</td></tr>
+    <tr><td>70022</td><td>마침표 인장</td><td><span class="tag tag-rare">R</span></td><td>저HP 적 피해 +25%</td></tr>
+    <tr><td>70058</td><td>종막 눈금자</td><td><span class="tag tag-hero">H</span></td><td>적HP≤50% 피해 +32%</td></tr>
+    <tr><td>70030</td><td>보스 도감 절취본</td><td><span class="tag tag-rare">R</span></td><td>보스 피해 +18%</td></tr>
+    <tr><td>70060</td><td>사냥 기입바늘</td><td><span class="tag tag-hero">H</span></td><td>보스 피해 +24%</td></tr>
+    <tr><td>70037</td><td>봉인 사냥 장갑</td><td><span class="tag tag-hero">H</span></td><td>보스 피해 +30%</td></tr>
+    <tr><td>70041</td><td>왕조 말소 인장</td><td><span class="tag tag-legend">L</span></td><td>보스 피해 +40%</td></tr>
+    <tr><td>70045</td><td>도매상 영수증</td><td><span class="tag tag-epic">E</span></td><td>상점 가격 -15G</td></tr>
+    <tr><td>70059</td><td>비단 가격 봉인</td><td><span class="tag tag-hero">H</span></td><td>상점 가격 -25G</td></tr>
+  </table>
+</div>
+
+<hr>
+
+<!-- ====== 8 ====== -->
+<h2 id="s8">8. 상점 &amp; 보상</h2>
+<div class="grid-2">
+  <div class="card">
+    <h4>상점 페이지</h4>
+    <p><strong>진입:</strong> StageType=Shop 페이지 도달. 책 닫힘 &rarr; 판매대 드롭 연출.</p>
+    <h5><span class="badge-plan">원안</span> 구성: 유물3 + 정령석3 + 강화석3</h5>
+    <h5><span class="badge-build">현재빌드</span> 구성: 유물3 + 정령석3 + 강화석3</h5>
+    <p>상점 페이지: 3, 8, 13, 18, 23, 28 등</p>
+    <p><span class="badge-build">현재빌드</span> 상점은 9개 오퍼를 `유물 / 정령석 / 강화석` 세 묶음으로 읽히게 배치한다. 즉 플레이어는 `장기 투자`, `속성 확장`, `즉시 화력 상승`을 한 화면에서 같은 밀도로 비교한다.</p>
+    <h5>다중 타겟 정령석/강화석</h5>
+    <p>단일:80 / 다중:20. 다중 내부: 2=70, 3=25, 4=4, 5=1. 가격 = 기본가 × 타겟수.</p>
+    <h5>구매 프로세스</h5>
+    <ol>
+      <li>마우스 오버: 툴팁</li>
+      <li>클릭: 구매 팝업 (Gold 부족 시 버튼 비활성 + 빨간 텍스트)</li>
+      <li>구매: Gold 차감, 유물 HUD 추가, 슬롯 품절 표시</li>
+    </ol>
+    <p>종료: '주사위' 아이콘 버튼 &rarr; 판매대 제거 &rarr; 책 재배치 &rarr; 다음 페이지.</p>
+  </div>
+  <div class="card">
+    <h4>전투 보상</h4>
+    <h5>일반 스테이지 클리어</h5>
+    <p>Gold 획득 + <strong>기본 3택 1</strong>, 그리고 후반 normal/오버런 구간에서는 <strong>`책 테마 전리품` 1개가 추가된 4택 1</strong>이 된다. 이는 late page threshold(책 길이의 약 60% 이후)부터 열려, 현재 책이 던지는 위협 결을 다음 보상 기대와 직접 이어 주는 슬롯이다. 이번 단계에서는 여기에 더해 후반 신규 적을 실제로 잡았을 때 그 적 전리품이 같은 후보군에 직접 끼어들고, 책 클리어 직후에는 이번 세그먼트 동안 모은 전리품 축 일부를 `오버런 전리품 보관함` 3택 1으로 한 번 더 고르게 한다. 또한 정령석/강화석처럼 족보 슬롯을 직접 바꾸는 보상은 적용 직후 어떤 슬롯이 어떻게 변했는지 화면 안에서 즉시 피드백해야 한다.</p>
+    <ul>
+      <li>정령석 (족보 속성 부여)</li>
+      <li>강화석 (족보 기본DMG 증가)</li>
+      <li>HP 회복: <code>min(maxHP×3~8% + missingHP×15~30%, maxHP×35%)</code></li>
+      <li><strong>책 테마 전리품</strong>: 현재 책 테마에 따라 late normal/오버런에서만 열리는 추가 선택지. 슬라임 책은 `HP +8, Shield +8, Collapse -8`로 안정/붕괴 정리를, 고블린 책은 `Gold +35 + 무작위 족보 1개 강화`로 경제/화력 환전을, 리치 책은 `MP +2 + 무작위 족보 1개 속성 주입`으로 템포/속성 기대를 제공해 `이번 위협의 결`이 다음 페이지 기대와 바로 이어지게 만든다.</li>
+      <li><strong>적 전리품</strong>: 후반 normal 전투에서 `기록 골렘(420016)` 또는 `붕락 정령(420017)`을 실제로 처치했다면, 보상 후보에 해당 적 전리품 1종이 추가로 섞인다. `균열 석판 조각`은 `Shield +12 + 무작위 족보 1개 강화 + 무작위 족보 1개 대지 주입`으로 방벽 퍼즐 다음 턴을 밀어 주고, `붕락 응축핵`은 `MP +2 + Collapse -12 + 무작위 족보 1개 전격 주입`으로 방금 감당한 붕괴 리스크를 다음 템포 보상으로 바꿔 준다. 오버런에서는 같은 전리품이 강화 버전(`+`)으로 떠 수치가 소폭 올라간다.</li>
+      <li><strong>오버런 전리품 보관함</strong>: 책을 클리어하면 엔딩 화면에서 이번 세그먼트 동안 기록한 특수 적 전리품 + 현재 책의 테마 전리품 중 최대 3개를 다시 보여 주고, 그중 1개를 골라 다음 오버런 진입 직전에 즉시 적용한다. 즉 late normal에서 생긴 기억점을 `책 클리어 -> 다음 권 진입` 경계까지 끌고 가는 선택지다.</li>
+      <li><strong>현재빌드 UX</strong>: 정령석/강화석 적용 직후에는 변경된 족보 슬롯 목록, 새 속성/강화 수치, 연출용 하이라이트를 같은 보상 화면에서 즉시 보여 준다. 현재 빌드는 여기에 더해 변화 전후 값을 카드 안에서 직접 비교해 `없음 -> 전격`, `강화 +0 -> +1` 같은 결과를 바로 읽게 한다.</li>
+    </ul>
+    <h5>보스 클리어 추가</h5>
+    <p>위 보상 + <strong>유물 3택 1</strong> (무료)</p>
+    <h5>페이지 전환</h5>
+    <p>족보 잠금 전부 해제 (현재 빌드)</p>
+  </div>
+</div>
+
+<hr>
+
+<!-- ====== 9 ====== -->
+<h2 id="s9">9. 스테이지 구조</h2>
+<div class="card">
+  <div class="grid-2">
+    <div>
+      <h4><span class="badge-plan">원안</span></h4>
+      <ul>
+        <li>총 40페이지 선형 진행</li>
+        <li>보스: 10페이지 단위</li>
+        <li>StageType: Normal / Boss / FinalBoss / Shop</li>
+        <li>테마: "버려진 광산", "마법사의 탑" 등</li>
+      </ul>
+    </div>
+    <div>
+      <h4><span class="badge-build">현재빌드</span></h4>
+      <ul>
+        <li>마도서별 15 또는 30페이지</li>
+        <li>보스: 5페이지 단위</li>
+        <li>최종보스: 마지막 페이지 단일 강적</li>
+        <li>편성: 초반 1마리, 중반 2, 후반 3</li>
+      </ul>
+    </div>
+  </div>
+  <h4>페이즈 전환 로직</h4>
+  <div class="flow">
+    <span class="flow-step">도서관 진입</span><span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">마도서 선택</span><span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">Normal (전투)</span><span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">보상</span><span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">Shop (상점)</span><span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">Boss (보스전)</span><span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">FinalBoss</span><span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">승리/봉인</span>
+  </div>
+  <h4>승리 연출</h4>
+  <p>보스 &rarr; 책 봉인 연출 &rarr; 책 닫힘 &rarr; 마법진 빛 &rarr; 도서관 &rarr; 책장에 꽂힘 &rarr; 결과 화면</p>
+  <h4>패배 연출</h4>
+  <ul>
+    <li>HP 0: 화면 붉어짐 &rarr; 결과 화면</li>
+    <li>붕괴 100% / 전 족보 잠금: 책 찢어짐 &rarr; 결과 화면</li>
+  </ul>
+</div>
+
+<hr>
+
+<!-- ====== 10 ====== -->
+<h2 id="s10">10. 상태이상 (Character State)</h2>
+<div class="card">
+  <h4>현재 빌드 상태이상 5종</h4>
+  <table>
+    <tr><th>상태</th><th>유형</th><th>효과</th><th>기본 지속</th></tr>
+    <tr><td><span class="tag tag-fire">화상</span></td><td>DoT</td><td>턴 시작 시 4+burnBonus 피해/스택</td><td>2턴</td></tr>
+    <tr><td><span class="tag tag-ice">빙결</span></td><td>CC</td><td>플레이어: 리롤 감소 / 몬스터: 공격 -2×스택. 3중첩=기절</td><td>2턴</td></tr>
+    <tr><td><span class="tag tag-elec">감전</span></td><td>디버프</td><td>받는 피해 +20%/스택</td><td>2턴</td></tr>
+    <tr><td><span class="tag tag-earth">쇄약</span></td><td>디버프</td><td>받는 피해 +10%/스택, 턴 시작 실드 -2×스택</td><td>2턴</td></tr>
+    <tr><td style="color:var(--accent-fire)">격노</td><td>버프</td><td>공격력 +2/스택</td><td>3턴</td></tr>
+  </table>
+
+  <h4>DT_CharacterState 구조</h4>
+  <table>
+    <tr><th>필드</th><th>설명</th></tr>
+    <tr><td>Code (Int)</td><td>상태 코드 (900~999)</td></tr>
+    <tr><td>Group (Int)</td><td>그룹 번호</td></tr>
+    <tr><td>Duration (Int)</td><td>기본 지속 턴</td></tr>
+    <tr><td>InitStack / MaxStack</td><td>초기 / 최대 중첩</td></tr>
+    <tr><td>StatType (Enum)</td><td>MaxHp, MaxMp, Shield, Attack, AttackRatio, Defense, DamageRatio, ReceiveDamageRatio, CollapseIncrease 등</td></tr>
+    <tr><td>StatValue (Int)</td><td>수치</td></tr>
+  </table>
+  <div class="note">코드 범위: 900~919 버프 / 920~939 디버프 / 940~959 CC / 960~979 패시브 / 980~999 시스템</div>
+</div>
+
+<hr>
+
+<!-- ====== 11 ====== -->
+<h2 id="s11">11. UI/UX &amp; 연출</h2>
+<div class="card">
+  <h4>아트 스타일</h4>
+  <p><strong>픽셀 아트</strong>, 브라운 톤 (양피지/서고/청동/어두운 잉크). 몬스터 카드: 하스스톤 스타일. 주사위 애니메이션 레퍼런스: "Die in the Dungeon".</p>
+</div>
+<div class="card">
+  <h4>현재 빌드 UI 방향 <span class="badge-build">현재빌드</span></h4>
+  <p>현재 스탠드얼론 빌드는 상단/좌측/중앙/우측의 기본 정보 배치를 유지하되, 화면을 더 <strong>`런 보드`처럼 읽히게</strong> 재정렬하는 방향으로 이동 중이다. 도서관은 `책 선택 메뉴`보다 `이번 판의 성격을 고르는 보드`, 우측 패널은 `페이지 목록`보다 `Route Board`, 전투는 `계산 화면`보다 `Battle Table`, 보상/상점은 `카드 나열`보다 `Run Curation`, 엔딩은 `정산창`보다 `Overrun Oath`에 가깝게 읽히는 것을 현재 목표로 삼는다.</p>
+</div>
+<div class="card">
+  <h4>화면 레이아웃</h4>
+  <table>
+    <tr><th>위치</th><th>내용</th></tr>
+    <tr><td>상단 바</td><td>사운드 토글, 해상도, 세이브, 도서관 이동, 배속(1x/2x/3x)</td></tr>
+    <tr><td>좌측 패널</td><td>HP 바(빨강) + MP 바(파랑) + 상태이상 아이콘 / 유물 HUD (탭 전환)</td></tr>
+    <tr><td>중앙</td><td>주사위 테이블 + 몬스터 카드(최대3) + 기억 회람판(6-6-1)</td></tr>
+    <tr><td>우측</td><td>페이지 진행 책 + 붕괴 게이지(보라) + 전투 로그</td></tr>
+    <tr><td>하단 중앙</td><td>주사위 5슬롯 + 롤 버튼 + 잔여 리롤 표시</td></tr>
+  </table>
+</div>
+<div class="card">
+  <h4>몬스터 카드 상세</h4>
+  <ul>
+    <li>프레임: 일반=흰색, 보스=빨간색</li>
+    <li>중앙: 몬스터 이미지 + 속성 아이콘</li>
+    <li>상단: 다음 행동 미리보기 (칼/방패/↑/소용돌이/혼합)</li>
+    <li>하단: HP 프로그레스 바 (0.5초 보간) + 상태이상 아이콘</li>
+    <li>마우스 오버: 이름, 설명, 다음 행동 상세, 적용 상태</li>
+    <li>타겟 모드: 주황 외곽선</li>
+    <li>사망: 카드가 책으로 빨려 들어가는 봉인 연출</li>
+  </ul>
+</div>
+<div class="card">
+  <h4>연출 사양</h4>
+  <table>
+    <tr><th>대상</th><th>연출</th></tr>
+    <tr><td>HP/MP 변동</td><td>0.2초 부드러운 보간. HP 감소 시 붉은 잔상</td></tr>
+    <tr><td>HP 위기(30%↓)</td><td>붉은 비네팅 점멸 + HP 바 떨림</td></tr>
+    <tr><td>붕괴 변동</td><td>0.5초 보간 + Floating Text(보라)</td></tr>
+    <tr><td>붕괴 위기(90%↑)</td><td>프로그레스 바 떨림</td></tr>
+    <tr><td>책 손상</td><td>30/60/90% 구간별 찢어짐 심화</td></tr>
+    <tr><td>주사위 고정</td><td>아웃라인 강조, 마우스 오버 별도 효과</td></tr>
+    <tr><td>속성 부여</td><td>화염=불꽃, 빙결=서리, 전격=스파크, 대지=모래</td></tr>
+    <tr><td>유물 획득</td><td>카드 먼지화 &rarr; HUD로 이동</td></tr>
+  </table>
+</div>
+<div class="card">
+  <h4>배속 시스템</h4>
+  <p>우하단 버튼. X1 &rarr; X2 &rarr; X3 순환. 모든 애니메이션 스케일링. 고배속 사운드 피치 보정 필요.</p>
+</div>
+<div class="card">
+  <h4>인게임 툴팁</h4>
+  <table>
+    <tr><th>대상</th><th>내용</th></tr>
+    <tr><td>유물</td><td>제목 + 설명 ({0}/{1}/{2} 파라미터)</td></tr>
+    <tr><td>족보</td><td>이름 + 속성아이콘 + 예상피해 + 필요MP + 효과아이콘(칼/방패/하트)</td></tr>
+    <tr><td>몬스터</td><td>MonsterInfo 헤더 + 다음 행동 상세 + 상태이상 (%, 턴)</td></tr>
+  </table>
+</div>
+
+<hr>
+
+<!-- ====== 12 ====== -->
+<h2 id="s12">12. 사운드</h2>
+<div class="card">
+  <table>
+    <tr><th>카테고리</th><th>사운드</th></tr>
+    <tr><td>시스템 UI</td><td>클릭, 책 열기/닫기, 페이지 넘기기, 에러, 타겟팅, 책 찢어짐</td></tr>
+    <tr><td>주사위/족보</td><td>굴림, 잠금/해제, 슬롯 호버, 슬롯 잠금</td></tr>
+    <tr><td>주문/상태</td><td>화염/빙결/전기/대지 마법, 버프/디버프</td></tr>
+    <tr><td>몬스터/아이템</td><td>아이템 스폰, 유물 획득, 몬스터 스폰/피격/사망</td></tr>
+  </table>
+  <p>소스: Kenney.nl, ElevenLabs, Suno AI</p>
+</div>
+
+<hr>
+
+<!-- ====== 13 ====== -->
+<h2 id="s13">13. 데이터 테이블 설계</h2>
+<div class="card">
+  <h4>ID 형식: TCCIII</h4>
+  <p>T=카테고리(1~9), CC=서브(00~99), III=고유(000~999)</p>
+  <table>
+    <tr><th>T</th><th>테이블</th><th>서브카테고리</th></tr>
+    <tr><td>1</td><td>DT_Grimoire</td><td>1000xx 스타터, 1100xx 어드밴스, 1200xx 특화</td></tr>
+    <tr><td>2</td><td>DT_StageInfo</td><td>마도서별</td></tr>
+    <tr><td>3</td><td>DT_SpawnPool</td><td>마도서별</td></tr>
+    <tr><td>4</td><td>DT_Monster</td><td>400xxx 슬라임, 410xxx 고블린, 420xxx 리치</td></tr>
+    <tr><td>5</td><td>DT_MonsterAction</td><td>500xxx 공격, 510xxx 방어, 520xxx 특수</td></tr>
+    <tr><td>6</td><td>DT_HandRankings</td><td>600xxx (13개)</td></tr>
+    <tr><td>7</td><td>DT_Artifact</td><td>700xx C, 710xx R, 720xx E, 730xx H, 740xx L</td></tr>
+    <tr><td>8</td><td>DT_Collapse</td><td>800 플레이어, 810 몬스터, 820 디버프</td></tr>
+    <tr><td>9</td><td>DT_CharacterState</td><td>900~919 버프 ~ 980~999 시스템</td></tr>
+  </table>
+  <h4>코드 구조</h4>
+  <table>
+    <tr><th>파일</th><th>역할</th></tr>
+    <tr><td><code>data.js</code></td><td>마도서 18, 몬스터 12, 족보 13, 유물 61, 붕괴 6티어, 상태이상, 상단보너스 전체 데이터</td></tr>
+    <tr><td><code>game-engine.js</code></td><td>상태 전이, 피해 계산, 붕괴 판정, 인텐트 결정, HP 스케일링</td></tr>
+    <tr><td><code>app.js</code></td><td>렌더링, DOM 바인딩, 사운드 재생</td></tr>
+  </table>
+</div>
+
+<hr>
+
+<!-- ====== 14 ====== -->
+<h2 id="s14">14. 원안 vs 현재 빌드 비교</h2>
+<div class="card">
+  <h4>축소</h4>
+  <table>
+    <tr><th>항목</th><th>원안</th><th>현재빌드</th></tr>
+    <tr><td>타이틀/오프닝/종료</td><td>별도 화면</td><td>미구현</td></tr>
+    <tr><td>세이브</td><td>3슬롯</td><td>localStorage</td></tr>
+    <tr><td>옵션</td><td>전체 메뉴</td><td>토글 위주</td></tr>
+    <tr><td>상점 연출</td><td>보드+말+체스피스</td><td>카드형</td></tr>
+    <tr><td>캠페인</td><td>40페이지</td><td>15~30</td></tr>
+    <tr><td>원안 몬스터</td><td>박쥐/해골/와이번/골렘/정령</td><td>박쥐/해골/잿빛 와이번/기록 골렘/붕락 정령 반영, 보스형 골렘 잔여</td></tr>
+  </table>
+  <h4>확장</h4>
+  <table>
+    <tr><th>항목</th><th>내용</th></tr>
+    <tr><td>밸런스 랩</td><td>로비 수치 실험</td></tr>
+    <tr><td>상단 합계 비문</td><td>싱글 55점 달성 시 10종 3택 보너스</td></tr>
+    <tr><td>사운드</td><td>전체 적용</td></tr>
+    <tr><td>유물</td><td>61종 (원안은 미비)</td></tr>
+    <tr><td>마도서</td><td>18권 (원안은 미비)</td></tr>
+  </table>
+  <h4>구조 변경</h4>
+  <table>
+    <tr><th>항목</th><th>원안</th><th>현재빌드</th></tr>
+    <tr><td>정령석</td><td>상점 구매</td><td>전투 보상</td></tr>
+    <tr><td>족보 잠금</td><td>런 전체 유지</td><td>페이지마다 해제</td></tr>
+    <tr><td>보스 주기</td><td>10페이지</td><td>5페이지</td></tr>
+    <tr><td>붕괴 공식</td><td>50%+0.4%×게이지</td><td>7%+0.2%×게이지 (상한55%)</td></tr>
+    <tr><td>족보 피해</td><td>BaseDmg+LvPerDmg×Lv</td><td>baseDmg+handPowerLv×4</td></tr>
+  </table>
+</div>
+
+<hr>
+
+<!-- ====== 15 ====== -->
+<h2 id="s15">15. 리스크 &amp; 후속 과제</h2>
+<div class="card">
+  <h4>시스템 리스크</h4>
+  <ul>
+    <li>페이지마다 족보 해제 → 장기 긴장감 저하</li>
+    <li>상점과 보상 역할 일부 중복</li>
+    <li>붕괴 공식 원안/빌드 괴리 → 밸런스 검증 필요</li>
+  </ul>
+  <h4>콘텐츠 리스크</h4>
+  <ul>
+    <li>유물 61종 희귀도별 체감 가치 편차</li>
+    <li>`리치의 일기`의 MP 환급 규칙이 첫 주문 할인/고비용 피해 유물과 겹칠 때 과도한 폭발력을 만들 수 있어 밸런스 로그 검증이 더 필요하다.</li>
+    <li>`금간 해골`의 1회 부활과 빙결/쇄약 동시 압박이 후반 다수전에서 과도한 체감 스파이크를 만들 수 있어 밸런스 로그 검증이 더 필요하다.</li>
+    <li>`잿빛 와이번`의 첫 턴 단일 주문 피해 무효와 무피해 공격 상승이 단일 화력 위주 빌드에 과도한 무력감을 주지 않는지 밸런스 로그 검증이 더 필요하다.</li>
+    <li>이번 슬롯에 추가한 `붕락 정령`의 `마나 폭발`이 후반 일반전을 흥미롭게 만들지, 혹은 이미 높은 붕괴 구간에서 부당한 마무리 페널티로 느껴지는지 실제 플레이/FQA 기록이 더 필요하다.</li>
+    <li>이번 슬롯에서 late normal/오버런에 `책 테마 전리품`을 붙여 슬라임=안정, 고블린=경제, 리치=템포·속성 축은 열었지만, 다음 단계에서는 이 보상이 특정 신규 적/이벤트성 페이지와 더 직접 묶였을 때도 같은 기억점이 유지되는지 확인이 필요하다.</li>
+    <li>`태엽 항해일지`의 다음 턴 자원 전환이 `조율사의 나침반`과 겹칠 때 딜/안정성을 동시에 과도하게 밀지 않는지 밸런스 로그 검증이 더 필요하다.</li>
+    <li>`세 겹 장막본`의 턴 시작 MP/리롤 보너스가 `서약의 버클`·`완충 제본끈` 이후 추가 실드 유물까지 겹쳤을 때 지나치게 안정적인 눈덩이를 만들지 밸런스 로그 검증이 더 필요하다.</li>
+    <li>`오탈자 수습본`의 첫 불일치 주문 잠금 무시가 첫 주문 할인/불일치 환급 유물과 합쳐졌을 때 지나치게 안전한 낚시 플레이를 만들지 밸런스 로그 검증이 더 필요하다.</li>
+    <li>`전격 실험지`는 이번 슬롯에서 단일보스 재타격에 `전하 차폐` Shield +4를 더해 `전하 환류 8 + 보스 과전류(+0~6)`와 같은 타이밍에 생존 완충도 돌려주도록 보강했다. HP 100 · 100회 단일 검증에서는 승률 7.4%, 페이지 10 실패율 16.4%, 최종 페이지 클리어율 7.4%를 기록했고, 이어 4권 공통 100회 비교에서도 HP 100 승률 7.8%, 페이지 10 실패율 17.6%로 `토석 압인본` 7.3% / 18.5%를 근소하게 앞질렀다. 다만 여전히 `화염`/`빙결` 선두권보다는 아래이므로 다음 질문은 상위권 추격에 필요한 다음 축이 생존인지 총딜인지다.</li>
+    <li>`토석 압인본`의 추가 파쇄 8과 `남은 적이 없을 때 최대 12까지 깊어지는 붕락`이 `암반 압인석`·대지 다타격 족보와 겹칠 때 후반 실드 적 대응을 지나치게 평면화하지 않는지 밸런스 로그 검증이 더 필요하다. 이번 슬롯 결과만 보면 수치 자체는 과도하게 튀지 않았고, 남은 질문은 `깊은 붕락이 실제로 얼마나 자주 켜지느냐` 쪽으로 이동했다.</li>
+    <li>`balance:sim`에 시작 유물 / 페이지 수 override를 붙여 `종막 사냥 수첩` 병목을 다시 가른 결과, 스타터 교체안보다 `30페이지 길이 자체`가 더 큰 병목으로 확인됐다. 같은 스타터를 둔 채 15페이지 override에서는 승률이 살아났고, 실제 책 길이를 15페이지로 압축한 뒤 단독 24회 배치에서도 HP 75 / 85 / 100 기준 승률이 6.9% / 1.7% / 1.0%까지 회복됐다.</li>
+    <li>마도서 18권 차별점 설명/튜토리얼 부족</li>
+    <li>원안 몬스터는 `박쥐`, `해골`, `잿빛 와이번`, `기록 골렘`, `붕락 정령`까지 반영됐고, 다음 후보는 보스형 `골렘` 확장과 오버런/보상 이벤트 연결이다.</li>
+  </ul>
+  <h4>UX 리스크</h4>
+  <ul>
+    <li>정보 풍부하나 초보 학습 부담</li>
+    <li>상단 UI 밀집 → 옵션 메뉴 분리 검토</li>
+  </ul>
+  <h4>후속 과제</h4>
+  <ol>
+    <li>데이터 시트 JSON 정규화 &amp; 외부 파일 분리</li>
+    <li>저장 시스템 런 슬롯 확장</li>
+    <li>원안 몬스터 추가 구현 (`골렘`/`정령` + 보스 6종)</li>
+    <li>최근 100회 공통 배치 비교(`1200005`/`1200006`/`1200007`/`1200008`) 결과, `화염 교정쇄`/`빙결 관측 노트`가 HP 75~100 전 구간 선두권을 형성했고 `전격 실험지`/`토석 압인본`은 페이지 5·10 이후 급락이 더 선명하게 드러났다. 이어서 `balance:sim -- --grimoires=1200007,1200008 --runs=100 --hp=100 --checkpoints=5,10,15` 진단을 붙여 보니, 두 책은 페이지 5 진입 시 이미 평균 유물 2.0 / 주입 1.5를 확보했고 실패 사유도 HP 고갈이 87~100%를 차지했다. 그 뒤 `토석 압인본`은 `누적 쇄약 대비 고정 붕락 6` 가설만 실제로 건드려, 남은 적이 따로 없을 때 `붕락`이 현재 쇄약 누적량에 따라 최대 12 피해까지 깊어지도록 보강했다. HP 100 · 100회 단일 검증에서는 최종 페이지 클리어율 4.6%, 체크포인트 기준 페이지 5 실패율 26.5%, 페이지 10 실패율 16.8%, 페이지 15 실패율 4.8%를 기록해 직전 3.7% / 27.2% / 19.8% / 3.7%보다 완만하게 개선됐다. 이번 슬롯에서는 여기서 한 단계 더 나아가 `Ground Collapse Timing Report`를 추가했고, 페이지 5 도달 런 기준 `깊은 붕락` 발동 비중 96.6%, 평균 첫 발동 페이지 4.4, 페이지 10 / 15 도달 런 기준 발동 비중 100%를 확인했다.</li>
+    <li>`전격 실험지`/`토석 압인본`이 이번 100회 공통 배치에서 왜 `화염 교정쇄`/`빙결 관측 노트`보다 뒤로 밀렸는지 원인 축은 이미 좁혀졌다. `전격 실험지`는 기존 `전하 환류 8`에 더해 단일보스 구간 `보스 과전류(+0~6)`를 붙인 HP 100 · 100회 검증에서 승률 4.9%, 페이지 5 실패율 27.9%, 페이지 10 실패율 19.3%, 최종 페이지 클리어율 4.9%로 후반 마무리 쪽은 조금 더 개선됐다. 반면 페이지 5 실패율은 사실상 그대로라, 남은 질문은 `후반 킬 턴 부족`이 완전히 해소됐는가보다 `이 보강이 공통 배치에서도 실제 체급 상승으로 유지되는가` 쪽으로 이동했다. `토석 압인본`은 이번 `Ground Collapse Timing Report`로 `깊은 붕락`이 페이지 5 전후부터 이미 충분한 빈도로 켜진다는 점까지 확인했고, 이어 단일보스 깊은 붕락에 `균열 차폐` Shield +4를 붙인 HP 100 · 100회 단일 검증에서는 승률 7.1%, 페이지 5 실패율 24.4%, 페이지 10 실패율 15.1%로 직전보다 개선됐다. `AvgWard&lt;=P` 기준 평균 완충량은 페이지 5 / 10 / 15에서 8.97 / 21.60 / 36.14 Shield였다.</li>
+    <li>`금간 해골`의 부활/디버프 체감 밸런스 로그 축적 및 UI 표식 보강</li>
+    <li>아트 에셋, 사운드, 애니메이션 완성</li>
+    <li>튜토리얼 &amp; 접근성 확대</li>
+    <li>아웃게임 메타 (해금/업적) 설계</li>
+    <li>40페이지 장기 캠페인 모드 복원</li>
+  </ol>
+</div>
+
+<hr>
+
+<div class="summary-box" style="text-align:center; margin-top:48px;">
+  <h3>현재 빌드 정의</h3>
+  <p style="font-size:18px;">
+    <strong>"원안 핵심 전투 루프를 데스크톱 플레이테스트용으로 재해석한 전략 프로토타입"</strong>
+  </p>
+  <p style="color:var(--text-dim); margin-top:12px;">
+    야추 족보 × 주문 전투의 결합이 직관적이며, 18권 마도서 / 61종 유물 / 4속성 / 6단계 붕괴가 빌드 다양성을 생성한다.<br>
+    도서관–전투–보상–상점 루프는 현재 버전에서도 게임의 정체성을 충분히 설명한다.
+  </p>
+</div>
+
+<p style="color:var(--text-dim); font-size:12px; text-align:center; margin-top:40px;">
+  &copy; 2026 Dice Spell &mdash; Confluence 원안 기획서 + Standalone 소스코드 역기획 기반 종합 기획서<br>
+  생성일: 2026-03-15
+</p>
+
+</main>
+</body>
+</html>
